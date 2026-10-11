@@ -1,0 +1,21 @@
+node_modules/
+/release/
+/dist/
+.superpowers/
+.playwright-mcp/
+.agents/
+secrets/
+# Maintainer-only store publishing script (names the publisher / service account)
+/scripts/upload-webstore.mjs
+*.png.bak
+
+# macOS Finder metadata
+.DS_Store
+
+# bb-browser / playwright-mcp scratch artifacts that pile up at repo root
+/.snap.json
+/.tmp_snapshot.json
+/xviral-*.png
+/xvm-*.png
+/liv-newtweet-*.png
+/content-filter-sample-report.json

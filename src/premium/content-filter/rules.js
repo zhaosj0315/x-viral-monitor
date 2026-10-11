@@ -1,0 +1,66 @@
+// AUTO-GENERATED from bootstrap-rules.json by scripts/sync-rules.mjs — do not edit.
+//
+// Minimal bootstrap fallback for the MAIN-world content filter. Remote
+// rules fetched by isolated.js override this at runtime via
+// XVM_CONTENT_FILTER_RULES_UPDATE.
+(function () {
+  window.__xvmContentFilterBuiltinRules = {
+  "version": 1,
+  "levels": {
+    "light": [
+      "hard-telegram-group-funnel"
+    ],
+    "standard": [
+      "hard-telegram-group-funnel",
+      "adult-sex-service-high",
+      "spam-gambling-high",
+      "spam-phishing-airdrop-high",
+      "spam-bio-wechat-telegram-funnel-high"
+    ],
+    "strict": [
+      "hard-telegram-group-funnel",
+      "adult-sex-service-high",
+      "spam-gambling-high",
+      "spam-phishing-airdrop-high",
+      "spam-bio-wechat-telegram-funnel-high"
+    ]
+  },
+  "rules": [
+    {
+      "id": "hard-telegram-group-funnel",
+      "type": "regex",
+      "field": "content",
+      "value": "(t\\.me|telegram|电报|飞机).{0,32}(福利(资源|视频|社群|社区|导航|群|频道)|成人(资源|视频)|成人视频|私信(加入|加群|进群|领取|获取)|加(群|频道)|进群|群里.{0,8}(福利|资源|视频|约|广告)|频道.{0,8}(福利|资源|视频|广告)|同城.{0,8}(线下|上门|可约)|线下.{0,8}(约|上门|见面)|上门|约P|约炮|曰泡|宝宝.{0,6}(点这里|主页|私信))",
+      "severity": "block"
+    },
+    {
+      "id": "adult-sex-service-high",
+      "type": "regex",
+      "field": "content",
+      "value": "(约炮|裸聊|外围|包养|上门服务|援交|同城可约)",
+      "severity": "high"
+    },
+    {
+      "id": "spam-gambling-high",
+      "type": "regex",
+      "field": "content",
+      "value": "(博彩|赌场|娱乐城|投注平台|澳门线上娱乐|百家乐|体育投注)",
+      "severity": "high"
+    },
+    {
+      "id": "spam-phishing-airdrop-high",
+      "type": "regex",
+      "field": "content",
+      "value": "(空投|领取奖励|钱包授权|助记词|私钥|钓鱼链接|claim now)",
+      "severity": "high"
+    },
+    {
+      "id": "spam-bio-wechat-telegram-funnel-high",
+      "type": "regex",
+      "field": "bio",
+      "value": "((卫星|微信|wechat|vx|wx)[0-9一二三]?\\s*[:：].{0,80}){2,}(tg|telegram|电报)\\s*[:：].{0,80}(详细点|其他也有做)",
+      "severity": "high"
+    }
+  ]
+};
+})();

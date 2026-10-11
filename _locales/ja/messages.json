@@ -1,0 +1,621 @@
+{
+  "extName": {
+    "message": "X 爆速レーダー - AI 創作 & 流速モニター"
+  },
+  "extDescription": {
+    "message": "X 投稿の流速バッジ・爆速分析・AI 二次創作・ランキング出力・長尺画像ビューア — すべてローカル処理、データ収集ゼロ。"
+  },
+  "popupSubtitle": {
+    "message": "X 投稿のリアルタイム表示流速"
+  },
+  "tierNormal": {
+    "message": "通常"
+  },
+  "tierTrending": {
+    "message": "上昇中"
+  },
+  "tierViral": {
+    "message": "バズ中"
+  },
+  "hoverHint": {
+    "message": "バッジにホバーして表示数・いいね・リポスト・返信・ブックマーク・バズ指数を確認。"
+  },
+  "thresholdTrending": {
+    "message": "🚀 上昇中のしきい値"
+  },
+  "thresholdViral": {
+    "message": "🔥 バズのしきい値"
+  },
+  "btnSave": {
+    "message": "保存"
+  },
+  "btnSaved": {
+    "message": "保存しました"
+  },
+  "btnReset": {
+    "message": "リセット"
+  },
+  "btnAdd": {
+    "message": "追加"
+  },
+  "btnDelete": {
+    "message": "削除"
+  },
+  "btnResetTemplates": { "message": "デフォルトに戻す" },
+  "grokTplSaved": { "message": "保存しました" },
+  "grokTplNamePlaceholder": { "message": "テンプレート名" },
+  "flashSaved": {
+    "message": "保存しました ✓"
+  },
+  "flashReset": {
+    "message": "リセットしました ✓"
+  },
+  "featureCopyMdTitle": {
+    "message": "📋 投稿を Markdown としてコピー"
+  },
+  "featureCopyMdDesc": {
+    "message": "X のネイティブ共有メニューの下部に「Markdown としてコピー」を追加し、本文・投稿者・リンク・日時を Markdown 形式でコピーします。"
+  },
+  "featureLeaderboardTitle": {
+    "message": "📊 流速リーダーボード"
+  },
+  "featureLeaderboardDesc": {
+    "message": "現在のページで最も伸びている投稿を表示するドラッグ可能なフローティングパネルです。行をクリックすると投稿までスクロールします。"
+  },
+  "featureLeaderboardEdgeHideTitle": {
+    "message": "端に隠す"
+  },
+  "featureLeaderboardEdgeHideDesc": {
+    "message": "有効にすると、リーダーボードを画面端までドラッグして離したときに収納します。"
+  },
+  "featureLeaderboardShowTop": {
+    "message": "上位"
+  },
+  "featureLeaderboardTweets": {
+    "message": "件を表示"
+  },
+  "featureLeaderboardColsHint": {
+    "message": "ドラッグで並べ替え · チェックで表示"
+  },
+  "popupColRank": {
+    "message": "順位"
+  },
+  "popupColIcon": {
+    "message": "ティアアイコン"
+  },
+  "popupColHandle": {
+    "message": "ユーザー名"
+  },
+  "popupColPreview": {
+    "message": "投稿プレビュー"
+  },
+  "popupColViews": {
+    "message": "表示回数"
+  },
+  "popupColVelocity": {
+    "message": "流速"
+  },
+  "contentViews": {
+    "message": "表示回数"
+  },
+  "contentLikes": {
+    "message": "いいね"
+  },
+  "contentRetweets": {
+    "message": "リポスト"
+  },
+  "contentReplies": {
+    "message": "返信"
+  },
+  "contentBookmarks": {
+    "message": "ブックマーク"
+  },
+  "contentVelocity": {
+    "message": "流速"
+  },
+  "contentViralScore": {
+    "message": "バズ指数"
+  },
+  "contentPosted": {
+    "message": "投稿日時"
+  },
+  "contentLeaderboardTitle": {
+    "message": "このページの注目投稿"
+  },
+  "contentLeaderboardDragToMove": {
+    "message": "ドラッグして移動"
+  },
+  "contentLeaderboardBackToPrevious": {
+    "message": "前のスクロール位置に戻る"
+  },
+  "contentLeaderboardEdgeHide": {
+    "message": "端に隠す"
+  },
+  "contentLeaderboardEdgeShow": {
+    "message": "展開"
+  },
+  "contentLeaderboardSettings": {
+    "message": "注目投稿リストの設定を開く"
+  },
+  "contentLeaderboardClose": {
+    "message": "注目投稿リストを閉じる"
+  },
+  "contentLeaderboardCloseSettings": {
+    "message": "設定を閉じる"
+  },
+  "contentLeaderboardSettingsPanelTitle": {
+    "message": "注目投稿リスト設定"
+  },
+  "contentLeaderboardColumns": {
+    "message": "表示する列"
+  },
+  "contentLeaderboardSettingsAutoSave": {
+    "message": "変更は自動保存され、このページにすぐ反映されます。"
+  },
+  "contentLeaderboardTotalViews": {
+    "message": "総表示回数"
+  },
+  "contentLeaderboardAiReply": {
+    "message": "ワンクリックAI返信"
+  },
+  "contentCopyMdLabel": {
+    "message": "Markdown としてコピー"
+  },
+  "contentCopyMdDone": {
+    "message": "コピーしました！"
+  },
+  "contentCopyMdAttribution": {
+    "message": "via X Viral Monitor"
+  },
+  "contentCopyMdNoTweetFound": {
+    "message": "投稿が見つかりません"
+  },
+  "contentCopyMdCopyFailed": {
+    "message": "コピーに失敗しました"
+  },
+  "contentCopyTweetCommentsLabel": {
+    "message": "投稿とコメントをコピー"
+  },
+  "contentCopyTweetCommentsDone": {
+    "message": "投稿とコメントをコピーしました！"
+  },
+  "contentCopyTweetCommentsHeading": {
+    "message": "コメント"
+  },
+  "contentFallbackTweetLabel": {
+    "message": "投稿"
+  },
+  "flashColumnsSaved": {
+    "message": "列設定を保存しました ✓"
+  },
+  "flashLeaderboardOn": {
+    "message": "リーダーボードを有効化 ✓"
+  },
+  "flashLeaderboardOff": {
+    "message": "リーダーボードを無効化"
+  },
+  "flashLeaderboardEdgeHideOn": {
+    "message": "端に隠す機能を有効化 ✓"
+  },
+  "flashLeaderboardEdgeHideOff": {
+    "message": "端に隠す機能を無効化"
+  },
+  "flashCopyMdOn": {
+    "message": "Markdown コピーを有効化 ✓"
+  },
+  "flashCopyMdOff": {
+    "message": "Markdown コピーを無効化"
+  },
+  "flashShowingTop": {
+    "message": "上位 $COUNT$ 件を表示 ✓",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "contentStarChartMenuLabel": {
+    "message": "サンクス・スターチャート"
+  },
+  "contentStarChartAttribution": {
+    "message": "via X Viral Monitor"
+  },
+  "contentStarChartTitle": {
+    "message": "サンクス・スターチャート"
+  },
+  "contentStarChartLoading": {
+    "message": "サポーターを読み込み中..."
+  },
+  "contentStarChartProgress": {
+    "message": "{{COUNT}} 名読み込み済み"
+  },
+  "contentStarChartRateLimited": {
+    "message": "レート制限のため {{SECONDS}} 秒待機中..."
+  },
+  "contentStarChartDone": {
+    "message": "完了 — {{COUNT}} 名のサポーター"
+  },
+  "contentStarChartDoneTruncated": {
+    "message": "上限到達 — {{COUNT}} 名読み込み済み（さらに存在）"
+  },
+  "contentStarChartError": {
+    "message": "読み込み失敗：{{REASON}}"
+  },
+  "contentStarChartNoTweetFound": {
+    "message": "ツイートを特定できません"
+  },
+  "contentStarChartModuleNotLoaded": {
+    "message": "スターチャートを読み込めません — ページを再読み込みしてください"
+  },
+  "contentStarChartLegendRT": {
+    "message": "リツイート"
+  },
+  "contentStarChartLegendQuote": {
+    "message": "引用"
+  },
+  "contentStarChartLegendBoth": {
+    "message": "両方"
+  },
+  "contentStarChartClose": {
+    "message": "閉じる"
+  },
+  "contentStarChartStatRetweets": {
+    "message": "リツイート"
+  },
+  "contentStarChartStatQuotes": {
+    "message": "引用"
+  },
+  "contentStarChartStatSupporters": {
+    "message": "サポーター"
+  },
+  "contentStarChartStatSpan": {
+    "message": "引用期間"
+  },
+  "contentStarChartSearchPlaceholder": {
+    "message": "名前 / ハンドルで検索..."
+  },
+  "contentStarChartRiverTitle": {
+    "message": "引用ストリーム"
+  },
+  "contentStarChartRiverEmpty": {
+    "message": "引用ツイートはまだありません"
+  },
+  "contentStarChartEmpty": {
+    "message": "このツイートにはまだサポーターがいません"
+  },
+  "contentStarChartReset": {
+    "message": "ビューをリセット"
+  },
+  "popupStarChartLabel": {
+    "message": "サンクス・スターチャート"
+  },
+  "popupStarChartHint": {
+    "message": "ツイートの共有メニューにスターチャート生成項目を追加します。"
+  },
+  "flashStarChartOn": {
+    "message": "スターチャートを有効化"
+  },
+  "flashStarChartOff": {
+    "message": "スターチャートを無効化"
+  },
+  "featureBookmarkFoldersTitle": {
+    "message": "🔖 ブックマークフォルダーメニュー"
+  },
+  "featureBookmarkFoldersDesc": {
+    "message": "ツイートのブックマークボタンにホバーして、フォルダー選択、保存先確認、新規作成ができます。X Premium が必要です。"
+  },
+  "flashBookmarkFoldersOn": {
+    "message": "ブックマークフォルダーメニューを有効化"
+  },
+  "flashBookmarkFoldersOff": {
+    "message": "ブックマークフォルダーメニューを無効化"
+  },
+  "contentBookmarkMenuInFolder": {
+    "message": "保存先:"
+  },
+  "contentBookmarkMenuNotInAny": {
+    "message": "どのフォルダーにも入っていません"
+  },
+  "contentBookmarkMenuCheckFailed": {
+    "message": "現在のフォルダーを確認できません。フォルダーをクリックして再試行してください。"
+  },
+  "contentBookmarkMenuChecking": {
+    "message": "現在のフォルダーを確認中…"
+  },
+  "contentBookmarkMenuLoadingFolders": {
+    "message": "ブックマークフォルダーを読み込み中…"
+  },
+  "contentBookmarkMenuLoadFailed": {
+    "message": "フォルダーの読み込みに失敗しました。X Premium が必要な可能性があります。"
+  },
+  "contentBookmarkMenuNoFolders": {
+    "message": "フォルダーはまだありません"
+  },
+  "contentBookmarkMenuNewFolderPlaceholder": {
+    "message": "+ 新規フォルダー（Enter）"
+  },
+  "featureBookmarkCountTitle": {
+    "message": "🔖 ブックマーク数を表示"
+  },
+  "featureBookmarkCountDesc": {
+    "message": "タイムライン上の各ツイートのブックマークボタン横にブックマーク数を表示します。"
+  },
+  "flashBookmarkCountOn": {
+    "message": "ブックマーク数の表示を有効化"
+  },
+  "flashBookmarkCountOff": {
+    "message": "ブックマーク数の表示を無効化"
+  },
+  "contentStarChartTitleLabel": {
+    "message": "ベロシティモニター"
+  },
+  "contentStarChartHeroEyebrow": {
+    "message": "この投稿を運んでくれたすべての人へ"
+  },
+  "contentStarChartHeroTitle": {
+    "message": "ひとつひとつの光は、投稿を手渡した手。"
+  },
+  "contentStarChartStatsSectionTitle": {
+    "message": "概要"
+  },
+  "contentStarChartPeopleSectionTitle": {
+    "message": "サポーター"
+  },
+  "contentStarChartFilterAll": {
+    "message": "全て"
+  },
+  "contentStarChartFilterRetweet": {
+    "message": "リツイート"
+  },
+  "contentStarChartFilterQuote": {
+    "message": "引用"
+  },
+  "contentStarChartFilterBoth": {
+    "message": "両方"
+  },
+  "contentStarChartRiverPrev": {
+    "message": "前の引用"
+  },
+  "contentStarChartRiverNext": {
+    "message": "次の引用"
+  },
+  "popupGrokPromptTitle": {
+    "message": "Grok コメントプロンプト"
+  },
+  "popupGrokPromptHint": {
+    "message": "指示だけ書けば十分です。[推文内容] と「各返信をコードブロックで囲む」指示は、無ければ自動で補われます。挿入位置を指定したいときだけ [推文内容] を書いてください。返信欄の AI 生成をクリックしてテンプレートを選び、生成後に Options から1件を選びます。"
+  },
+  "popupGrokTempChatLabel": {
+    "message": "一時チャットを使う（Grok 履歴を汚さない）"
+  },
+  "flashGrokTempChatOn": {
+    "message": "一時チャットを有効にしました ✓"
+  },
+  "flashGrokTempChatOff": {
+    "message": "一時チャットを無効にしました"
+  },
+  "flashGrokPromptSaved": {
+    "message": "Grok プロンプトを保存しました ✓"
+  },
+  "flashGrokPromptReset": {
+    "message": "Grok プロンプトをリセットしました ✓"
+  },
+  "badgeStyleLabel": {
+    "message": "🏷️ バッジスタイル"
+  },
+  "badgeStylePillSolid": {
+    "message": "ソリッドピル"
+  },
+  "badgeStyleInlineClassic": {
+    "message": "クラシックインライン"
+  },
+  "flashBadgeStyleSaved": {
+    "message": "バッジスタイルを保存しました ✓"
+  },
+  "proBannerFree":       { "message": "無料版" },
+  "proBannerPro":        { "message": "Pro 有効" },
+  "proBannerTrial":      { "message": "トライアル — 残り $DAYS$ 日", "placeholders": { "DAYS": { "content": "$1" } } },
+  "proBannerTrialOne":   { "message": "トライアル — 残り 1 日" },
+  "proNudgeTrialEnd":    { "message": "トライアル残り $DAYS$ 日 — Pro にアップグレードしてフィルタを継続。", "placeholders": { "DAYS": { "content": "$1" } } },
+  "proNudgeTrialEndOne": { "message": "トライアル残り 1 日 — Pro にアップグレードしてフィルタを継続。" },
+  "proActivateLabel":    { "message": "購入済みですか? ライセンスキーを入力:" },
+  "proActivatePlaceholder": { "message": "creem-XXXXX..." },
+  "proActivateBtn":      { "message": "有効化" },
+  "proActivating":       { "message": "有効化中…" },
+  "proActivatedOk":      { "message": "ライセンスを有効化しました。x.com を再読み込みしてください。" },
+  "proActErrFormat":     { "message": "ライセンスキーの形式が正しくありません。" },
+  "proActErrWorkerUnset":{ "message": "ライセンスプロキシ未設定 — サポートにご連絡ください。" },
+  "proActErrGeneric":    { "message": "有効化失敗: $ERROR$", "placeholders": { "ERROR": { "content": "$1" } } },
+  "proLicenseField":     { "message": "ライセンス" },
+  "proActivatedField":   { "message": "有効化日" },
+  "proExpiresField":     { "message": "更新日" },
+  "proManageBtn":        { "message": "サブスクリプション管理" },
+  "proDeactivateBtn":    { "message": "無効化" },
+  "proDeactivating":     { "message": "無効化中…" },
+  "proDeactivatedOk":    { "message": "無効化しました。" },
+  "proDeactivateErr":    { "message": "無効化に失敗しました。" },
+  "rfTitle":         { "message": "投稿流速フィルター" },
+  "rfLockedHint":    { "message": "低流速の投稿を自動でフィルターし、注目のバズ投稿に集中できます。" },
+  "rfEnabled":       { "message": "低流速の投稿を非表示にする" },
+  "rfScopeLegend":   { "message": "スコープ" },
+  "rfScopeHome":     { "message": "ホーム" },
+  "rfScopeList":     { "message": "リスト" },
+  "rfScopeProfile":  { "message": "プロフィール" },
+  "rfScopeStatus":   { "message": "投稿詳細" },
+  "rfShortLegend":   { "message": "短い投稿 — いずれかが閾値超なら表示" },
+  "rfLongLegend":    { "message": "X Articles 長文 — いずれかが閾値超なら表示" },
+  "rfRatePerMin":    { "message": "views / 分 ≥" },
+  "rfAbsoluteViews": { "message": "総表示数 ≥" },
+  "rfRuleHint":      { "message": "ルール: (views/min > 速度閾値) または (総表示数 > 絶対閾値) いずれか成立で表示, それ以外は非表示。" },
+  "rfReset":         { "message": "デフォルト" },
+  "rfSave":          { "message": "保存" },
+  "rfSavedOk":       { "message": "保存しました ✓" },
+  "rfResetOk":       { "message": "リセット ✓" },
+  "featureLeaderboardResetPos":  { "message": "ランキング位置をリセット" },
+  "featureLeaderboardResetDone": { "message": "リセットしました。ページを更新してください。" },
+  "accRateFilter":    { "message": "流速フィルター" },
+  "accRateFilterSub": { "message": "高度" },
+  "accLeaderboard":   { "message": "ランキングとバッジ" },
+  "accPro":           { "message": "ライセンス / Pro" },
+  "accOther":         { "message": "その他の機能と設定" },
+  "heroTrialDaysLeft": { "message": "トライアル残り $DAYS$ 日", "placeholders": { "DAYS": { "content": "$1" } } },
+  "heroTrialDayOne":   { "message": "トライアル残り 1 日" },
+  "heroProActive":     { "message": "永久Pro版有効 · 全機能解放済み" },
+  "communityDevBadge": { "message": "Community DEV Build" },
+  "communityDevSub":   { "message": "ローカルの Pro 機能はすべて有効です。公式ライセンスサービスと自動更新は Chrome Web Store 版向けです。" },
+  "heroFreeTagline":   { "message": "ほとんどの機能は無料で、一部の高度な機能だけが Pro です。" },
+  "heroActivateExistingLink": { "message": "既存ライセンスを有効化" },
+  "proScopeTitle":     { "message": "🌟 解除されたPro機能" },
+  "proScopeBody":      { "message": "リアルタイム速度フィルター、バズ分析、8つのAI作成テンプレート、ランキングエクスポートが永続的に有効です。" },
+  "proFreeTitle":      { "message": "⚡️ 100% ローカルプライバシー" },
+  "proFreeBody":       { "message": "すべての分析とプロンプトはローカルで実行され、外部依存ゼロ、データ収集ゼロでオフライン利用可能です。" },
+  "proWebsiteLink":    { "message": "サイトの説明を見る" },
+  "proExpiresFieldPermanent": { "message": "無期限有効 (Lifetime VIP)" },
+  "cardFreeFeaturesTitle":  { "message": "無料機能" },
+  "cardProFeaturesTitle":   { "message": "Pro 機能" },
+  "cardProFeaturesSub":     { "message": "一部の高度な追加機能" },
+  "featureBadgeLabel":       { "message": "流速バッジ" },
+  "featureLeaderboardLabel": { "message": "ランキングパネル" },
+  "featureCopyMdLabel":      { "message": "Markdown としてコピー" },
+  "featureRateFilterLabel":  { "message": "流速フィルター" },
+  "featureColorCardLabel":   { "message": "カラーパレット" },
+  "featureWebhookLabel":     { "message": "プライベートホット監視" },
+  "featureBarkLabel":        { "message": "Bark 通知" },
+  "chipEnabled":     { "message": "有効" },
+  "chipComingSoon":  { "message": "近日公開" },
+  "btnConfigure":    { "message": "設定 →" },
+  "btnBack":         { "message": "戻る" },
+  "btnCancel":       { "message": "キャンセル" },
+  "footerPoweredBy": { "message": "Powered by" },
+  "toastM2Hint":     { "message": "v1.8.0 で公開予定" },
+  "activateTitle":   { "message": "既存ライセンスを有効化" },
+  "advBadgeThresholdsTitle": { "message": "バッジ閾値とスタイル" },
+  "advLeaderboardTitle":     { "message": "ランキング詳細" },
+  "advOtherFeaturesTitle":   { "message": "その他の機能" },
+  "advGrokShortTitle":       { "message": "AI 返信 — プロンプトテンプレート" },
+  "aiProviderTitle": { "message": "AI コメントプロバイダー" },
+  "aiProviderLabel": { "message": "プロバイダー" },
+  "aiPlatformLabel": { "message": "プラットフォーム" },
+  "aiBaseUrlLabel": { "message": "Base URL" },
+  "aiModelLabel": { "message": "モデル" },
+  "aiReplyCountLabel": { "message": "返信数" },
+  "aiApiKeyLabel": { "message": "API Key" },
+  "aiProviderHint": { "message": "クラウドプロバイダーには投稿の文脈が送信されます。Ollama はローカルで動作します。" },
+  "aiProviderHintGrok": { "message": "X Grok は現在の X ログイン状態を使います。API Key は不要です。" },
+  "aiProviderHintOllama": { "message": "Ollama はローカルで動作します。Ollama が起動済みで、モデルがダウンロード済みであることを確認してください。" },
+  "aiProviderHintCloud": { "message": "クラウドプロバイダーには投稿本文と返信の文脈が送信されます。" },
+  "aiProviderXGrok": { "message": "X Grok" },
+  "aiProviderXGrokDesc": { "message": "現在の X ログイン状態を使用" },
+  "aiProviderOllama": { "message": "Ollama" },
+  "aiProviderOllamaDesc": { "message": "ローカルモデルサービス" },
+  "aiProviderOpenAICompatible": { "message": "OpenAI 互換" },
+  "aiProviderOpenAICompatibleDesc": { "message": "OpenAI、DeepSeek、OpenRouter など" },
+  "aiServiceConfigTitle": { "message": "サービス設定" },
+  "aiGenerationSettingsTitle": { "message": "生成設定" },
+  "aiCheckLoginStatus": { "message": "Grok の準備状態を確認" },
+  "aiTestConnection": { "message": "接続をテスト" },
+  "aiTestRunning": { "message": "接続をテスト中..." },
+  "aiTestOk": { "message": "接続テストに成功しました" },
+  "aiTestFailed": { "message": "接続テストに失敗しました" },
+  "tabPro":         { "message": "Pro" },
+  "tabFilter":      { "message": "フィルター" },
+  "tabLeaderboard": { "message": "ランキング" },
+  "tabAi":          { "message": "AI 返信" },
+  "tabAbout":       { "message": "情報" },
+  "rfSubShort":     { "message": "短い投稿" },
+  "rfSubLong":      { "message": "長文 (X Article)" },
+  "comingListTitle":{ "message": "v1.8.0 で公開予定" },
+  "chipTierFree":   { "message": "無料" },
+  "chipTierTrial":  { "message": "トライアル" },
+  "chipTierPro":    { "message": "Pro" },
+  "chipTrialDays":  { "message": "残り $DAYS$ 日", "placeholders": { "DAYS": { "content": "$1" } } },
+  "chipTrialOne":   { "message": "残り 1 日" },
+  "themeLabel":     { "message": "テーマ" },
+  "themeSwitchToDark":  { "message": "ダークに切替" },
+  "themeSwitchToLight": { "message": "ライトに切替" },
+  "themeFollowSystem":  { "message": "システムに従う" },
+  "languageLabel":      { "message": "言語" },
+  "languageHint":       { "message": "ポップアップ、ページ上の表示、既定の Grok プロンプト言語を切り替えます。" },
+  "languageAuto":       { "message": "自動 / ブラウザに従う" },
+  "languageZh":         { "message": "中文" },
+  "languageEn":         { "message": "English" },
+  "languageJa":         { "message": "日本語" },
+  "aboutUpdatesTitle": { "message": "機能概要と更新情報" },
+  "aboutUpdatesDesc": { "message": "21Zhao 爆款雷达の最新機能とバージョン更新履歴を表示します。" },
+  "aboutShowUpdateNotes": { "message": "機能更新説明を表示" },
+  "aboutShowUpdateNotesSent": { "message": "21Zhao 爆款雷达の機能更新説明を開きました。" },
+  "aboutShowUpdateNotesNoTab": { "message": "更新説明を開けませんでした。もう一度お試しください。" },
+  "grokShortTemplateLabel": { "message": "プロンプトテンプレート" },
+  "popupGrokEnterReplyLabel": { "message": "Enter で返信を送信" },
+  "popupGrokEnterReplyHint": { "message": "有効にすると、Enter だけで返信を送信します。Shift/Command/Ctrl/Alt+Enter は従来どおり動作します。" },
+  "flashGrokEnterReplyOn": { "message": "Enter 送信を有効にしました" },
+  "flashGrokEnterReplyOff": { "message": "Enter 送信を無効にしました" },
+  "flashAiProviderSaved": { "message": "AI プロバイダー設定を保存しました" },
+  "grokDefaultTemplateName": { "message": "自然な返信" },
+  "grokCustomTemplateName": { "message": "テンプレート $N$", "placeholders": { "N": { "content": "$1" } } },
+  "contentLbHotOnly":      { "message": "ホットのみ" },
+  "contentLbHotProTitle":  { "message": "ホット投稿フィルター" },
+  "contentLbHotProSub":    { "message": "低表示数の投稿を非表示にし、実際に拡散している投稿だけ残す" },
+  "contentLbHotEnabledToast": { "message": "ホットのみが有効です。基準に満たない投稿はこのページから非表示になります。" },
+  "contentLbHotActiveNotice": { "message": "ホットのみが有効です。基準未満の投稿は非表示です。" },
+  "contentLbHotScopeTitle": { "message": "適用範囲" },
+  "contentLbHotScopeHome": { "message": "ホーム / おすすめ" },
+  "contentLbHotScopeList": { "message": "リスト" },
+  "contentLbHotScopeProfile": { "message": "プロフィール" },
+  "contentLbHotScopeStatus": { "message": "投稿詳細" },
+  "contentLbHotScopeCurrent": { "message": "現在" },
+  "contentLbHotDetails":   { "message": "全機能解放済み" },
+  "contentLbHotOpenSite":  { "message": "全機能解放済み" },
+  "contentUpdateTitle": { "message": "X Viral Radar · 最新アップデート" },
+  "contentUpdateSubtitle": { "message": "21Zhao Studio カスタム版 · プロフェッショナルな創作と監視機能を解放：" },
+  "contentUpdateItemProTitle": { "message": "⚡ 全機能完全解放" },
+  "contentUpdateItemProBody": { "message": "全機能がネイティブに組み込まれ完全解放：流速フィルター、高度なルール、ホット投稿限定表示を機能制限なしで利用可能。" },
+  "contentUpdateItemGeminiTitle": { "message": "🤖 Gemini 直接接続 & マルチモデル対応" },
+  "contentUpdateItemGeminiBody": { "message": "設定のAIプロバイダーでGoogle Gemini 2.0 Flash直接接続、OpenAI互換API、DeepSeek、OpenRouter、またはローカルOllamaを選択可能。" },
+  "contentUpdateItemViralAiTitle": { "message": "🔥 バズポスト深層分析 & リミックス" },
+  "contentUpdateItemViralAiBody": { "message": "8つのプロ向けプロンプトテンプレート：バズるフックと感情設計をワンクリックで分析し、即座に高品質リミックスを生成。" },
+  "contentUpdateItemLbQuickAiTitle": { "message": "⚡️ ランキングからワンクリックAI返信" },
+  "contentUpdateItemLbQuickAiBody": { "message": "ランキング各行のショートカットをクリックするだけで該当ポストへ移動し、返信欄と8つのAIテンプレートを自動起動。" },
+  "contentUpdateItemAiProviderTitle": { "message": "AI コメントサービス" },
+  "contentUpdateItemAiProviderBody": { "message": "設定 → AI コメント生成でサービスを選択できます。X Grok のほか、OpenAI 互換 API、DeepSeek、OpenRouter、ローカル Ollama に対応しました。" },
+  "contentUpdateItemReplyToolsTitle": { "message": "Enter で返信を送信" },
+  "contentUpdateItemReplyToolsBody": { "message": "コメント時に Enter だけで返信を送信できる機能を追加しました。設定 → その他の機能 → Enter で返信を送信を有効にすると、返信欄で Command + Enter が不要になります。" },
+  "contentUpdateItemHotOnlyTitle": { "message": "ホットのみ状態を明確化" },
+  "contentUpdateItemHotOnlyBody": { "message": "ホットのみを有効にすると、基準未満の投稿はページから非表示になります。適用範囲は Popup またはフローティングパネル設定で選べます。" },
+  "contentUpdateItemBookmarkToolsTitle": { "message": "ブックマーク機能を見つけやすく" },
+  "contentUpdateItemBookmarkToolsBody": { "message": "設定 → その他の機能で、ブックマークフォルダーメニューとブックマーク数表示を有効にできます。保存先の選択、保存場所の確認、タイムラインでの数表示に対応します。" },
+  "contentUpdateItemFilterRulesTitle": { "message": "コンテンツフィルターを安定化" },
+  "contentUpdateItemFilterRulesBody": { "message": "通常の Telegram 言及の誤判定を減らしつつ、返信やプロフィール文にある WeChat / Telegram 誘導広告パターンをより多く検出できるようになりました。" },
+  "contentUpdateDismiss": { "message": "使ってみる" },
+  "cfTitle":        { "message": "コンテンツフィルター" },
+  "cfLockedHint":   { "message": "コンテンツフィルターは無料で使えます。ここで有効化できます。" },
+  "cfEnabled":      { "message": "成人向け / 広告 / 誘導返信を隠す" },
+  "cfLevel":        { "message": "フィルター強度" },
+  "cfLevelLight":   { "message": "軽め" },
+  "cfLevelStandard":{ "message": "標準" },
+  "cfLevelStrict":  { "message": "強め" },
+  "cfRuleCounts":   { "message": "内蔵ルール $COUNT$ 件、カスタム $CUSTOM$ 件が有効です。", "placeholders": { "COUNT": { "content": "$1" }, "CUSTOM": { "content": "$2" } } },
+  "cfCustomTitle":  { "message": "カスタムルール" },
+  "cfWhitelistTitle": { "message": "ホワイトリスト / ブラックリスト設定" },
+  "cfValue":        { "message": "キーワード / 正規表現 / ドメイン" },
+  "cfAddRule":      { "message": "ルールを追加" },
+  "cfDeleteRule":   { "message": "ルールを削除" },
+  "cfCustomEmpty":  { "message": "カスタムルールはまだありません。" },
+  "cfWhitelistFollowing": { "message": "フォロー中のアカウントは常に許可" },
+  "cfWhitelistHandles": { "message": "許可するアカウント" },
+  "cfBlacklistHandles": { "message": "ブロックするアカウント" },
+  "cfWhitelistDomains": { "message": "許可するドメイン" },
+  "cfRuleHint":     { "message": "ルールはブラウザ内だけで実行され、内容はアップロードされません。ホワイトリスト、ハードルール、強度しきい値の順に適用します。" },
+  "cfRulesSourceBundled": { "message": "ルール元: 同梱" },
+  "cfRulesSourceRemote":  { "message": "ルール元: リモート · 更新 $AGO$", "placeholders": { "AGO": { "content": "$1" } } },
+  "cfRulesJustNow":       { "message": "たった今" },
+  "cfRulesMinutesAgo":    { "message": "$N$ 分前", "placeholders": { "N": { "content": "$1" } } },
+  "cfRulesHoursAgo":      { "message": "$N$ 時間前", "placeholders": { "N": { "content": "$1" } } },
+  "cfRulesDaysAgo":       { "message": "$N$ 日前", "placeholders": { "N": { "content": "$1" } } },
+  "cfRulesRefresh":       { "message": "今すぐ更新を確認" },
+  "cfRulesRefreshing":    { "message": "取得中…" },
+  "cfRulesRefreshOk":     { "message": "ルールを更新しました。" },
+  "cfRulesRefreshErr":    { "message": "取得に失敗しました。後ほど再試行してください。" },
+  "cfAutoSaved":          { "message": "自動保存しました" },
+  "advAppearanceTitle": { "message": "外観" }
+}

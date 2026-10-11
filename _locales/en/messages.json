@@ -1,0 +1,628 @@
+{
+  "extName": {
+    "message": "X Viral Radar - Real-Time Velocity & AI Creator Assistant",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Real-time impression velocity badges, viral breakdown analysis, AI remix drafts, Markdown export & image viewer on X. 100% private.",
+    "description": "Extension description"
+  },
+  "popupSubtitle": {
+    "message": "Real-time impression velocity on X tweets"
+  },
+  "tierNormal": {
+    "message": "Normal"
+  },
+  "tierTrending": {
+    "message": "Trending"
+  },
+  "tierViral": {
+    "message": "Viral"
+  },
+  "hoverHint": {
+    "message": "Hover badges to see views, likes, RT, replies, bookmarks and viral score."
+  },
+  "thresholdTrending": {
+    "message": "🚀 Trending threshold"
+  },
+  "thresholdViral": {
+    "message": "🔥 Viral threshold"
+  },
+  "btnSave": {
+    "message": "Save"
+  },
+  "btnSaved": {
+    "message": "Saved"
+  },
+  "btnReset": {
+    "message": "Reset"
+  },
+  "btnAdd": {
+    "message": "Add"
+  },
+  "btnDelete": {
+    "message": "Delete"
+  },
+  "btnResetTemplates": { "message": "Restore default templates" },
+  "grokTplSaved": { "message": "Saved" },
+  "grokTplNamePlaceholder": { "message": "Template name" },
+  "flashSaved": {
+    "message": "Saved ✓"
+  },
+  "flashReset": {
+    "message": "Reset ✓"
+  },
+  "featureCopyMdTitle": {
+    "message": "📋 Copy tweet as Markdown"
+  },
+  "featureCopyMdDesc": {
+    "message": "Adds a \"Copy as Markdown\" entry at the bottom of X's native share menu. Copies the tweet text, author, link and date in Markdown format."
+  },
+  "featureLeaderboardTitle": {
+    "message": "📊 Velocity leaderboard"
+  },
+  "featureLeaderboardDesc": {
+    "message": "Draggable floating panel showing the fastest-growing tweets visible on the current page. Click a row to scroll to the tweet."
+  },
+  "featureLeaderboardEdgeHideTitle": {
+    "message": "Edge-hide leaderboard"
+  },
+  "featureLeaderboardEdgeHideDesc": {
+    "message": "When enabled, drag the leaderboard to a screen edge and release to tuck it away."
+  },
+  "featureLeaderboardShowTop": {
+    "message": "Show top"
+  },
+  "featureLeaderboardTweets": {
+    "message": "tweets"
+  },
+  "featureLeaderboardColsHint": {
+    "message": "Drag to reorder · check to show"
+  },
+  "popupColRank": {
+    "message": "Rank"
+  },
+  "popupColIcon": {
+    "message": "Tier icon"
+  },
+  "popupColHandle": {
+    "message": "Username"
+  },
+  "popupColPreview": {
+    "message": "Tweet preview"
+  },
+  "popupColViews": {
+    "message": "Views"
+  },
+  "popupColVelocity": {
+    "message": "Velocity"
+  },
+  "contentViews": {
+    "message": "Views"
+  },
+  "contentLikes": {
+    "message": "Likes"
+  },
+  "contentRetweets": {
+    "message": "Retweets"
+  },
+  "contentReplies": {
+    "message": "Replies"
+  },
+  "contentBookmarks": {
+    "message": "Bookmarks"
+  },
+  "contentVelocity": {
+    "message": "Velocity"
+  },
+  "contentViralScore": {
+    "message": "Viral Score"
+  },
+  "contentPosted": {
+    "message": "Posted"
+  },
+  "contentLeaderboardTitle": {
+    "message": "Hot on this page"
+  },
+  "contentLeaderboardDragToMove": {
+    "message": "Drag to move"
+  },
+  "contentLeaderboardBackToPrevious": {
+    "message": "Return to previous scroll position"
+  },
+  "contentLeaderboardEdgeHide": {
+    "message": "Hide at edge"
+  },
+  "contentLeaderboardEdgeShow": {
+    "message": "Expand"
+  },
+  "contentLeaderboardSettings": {
+    "message": "Open leaderboard settings"
+  },
+  "contentLeaderboardClose": {
+    "message": "Close leaderboard"
+  },
+  "contentLeaderboardCloseSettings": {
+    "message": "Close settings"
+  },
+  "contentLeaderboardSettingsPanelTitle": {
+    "message": "Leaderboard settings"
+  },
+  "contentLeaderboardColumns": {
+    "message": "Visible columns"
+  },
+  "contentLeaderboardSettingsAutoSave": {
+    "message": "Changes are saved automatically and apply to this page immediately."
+  },
+  "contentLeaderboardTotalViews": {
+    "message": "Total views"
+  },
+  "contentLeaderboardAiReply": {
+    "message": "One-click AI reply"
+  },
+  "contentCopyMdLabel": {
+    "message": "Copy as Markdown"
+  },
+  "contentCopyMdDone": {
+    "message": "Copied!"
+  },
+  "contentCopyMdAttribution": {
+    "message": "via X Viral Monitor"
+  },
+  "contentCopyMdNoTweetFound": {
+    "message": "No tweet found"
+  },
+  "contentCopyMdCopyFailed": {
+    "message": "Copy failed"
+  },
+  "contentCopyTweetCommentsLabel": {
+    "message": "Copy tweet and comments"
+  },
+  "contentCopyTweetCommentsDone": {
+    "message": "Tweet and comments copied!"
+  },
+  "contentCopyTweetCommentsHeading": {
+    "message": "Comments"
+  },
+  "contentFallbackTweetLabel": {
+    "message": "tweet"
+  },
+  "flashColumnsSaved": {
+    "message": "Columns saved ✓"
+  },
+  "flashLeaderboardOn": {
+    "message": "Leaderboard ON ✓"
+  },
+  "flashLeaderboardOff": {
+    "message": "Leaderboard OFF"
+  },
+  "flashLeaderboardEdgeHideOn": {
+    "message": "Edge-hide ON ✓"
+  },
+  "flashLeaderboardEdgeHideOff": {
+    "message": "Edge-hide OFF"
+  },
+  "flashCopyMdOn": {
+    "message": "Copy-as-Markdown ON ✓"
+  },
+  "flashCopyMdOff": {
+    "message": "Copy-as-Markdown OFF"
+  },
+  "flashShowingTop": {
+    "message": "Showing top $COUNT$ ✓",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "contentStarChartMenuLabel": {
+    "message": "Thank-You Star Chart"
+  },
+  "contentStarChartAttribution": {
+    "message": "via X Viral Monitor"
+  },
+  "contentStarChartTitle": {
+    "message": "Thank-You Star Chart"
+  },
+  "contentStarChartLoading": {
+    "message": "Loading supporters..."
+  },
+  "contentStarChartProgress": {
+    "message": "{{COUNT}} supporters loaded"
+  },
+  "contentStarChartRateLimited": {
+    "message": "Hit rate limit, waiting {{SECONDS}}s..."
+  },
+  "contentStarChartDone": {
+    "message": "Done — {{COUNT}} supporters"
+  },
+  "contentStarChartDoneTruncated": {
+    "message": "Done — {{COUNT}} supporters (capped, more available)"
+  },
+  "contentStarChartError": {
+    "message": "Could not load supporters: {{REASON}}"
+  },
+  "contentStarChartNoTweetFound": {
+    "message": "Could not identify the tweet"
+  },
+  "contentStarChartModuleNotLoaded": {
+    "message": "Star chart not available — please reload the page"
+  },
+  "contentStarChartLegendRT": {
+    "message": "Retweet"
+  },
+  "contentStarChartLegendQuote": {
+    "message": "Quote"
+  },
+  "contentStarChartLegendBoth": {
+    "message": "Both"
+  },
+  "contentStarChartClose": {
+    "message": "Close"
+  },
+  "contentStarChartStatRetweets": {
+    "message": "Retweets"
+  },
+  "contentStarChartStatQuotes": {
+    "message": "Quotes"
+  },
+  "contentStarChartStatSupporters": {
+    "message": "Supporters"
+  },
+  "contentStarChartStatSpan": {
+    "message": "Quote span"
+  },
+  "contentStarChartSearchPlaceholder": {
+    "message": "Search name or handle..."
+  },
+  "contentStarChartRiverTitle": {
+    "message": "Quote River"
+  },
+  "contentStarChartRiverEmpty": {
+    "message": "No quotes yet"
+  },
+  "contentStarChartEmpty": {
+    "message": "No supporters found for this tweet"
+  },
+  "contentStarChartReset": {
+    "message": "Reset view"
+  },
+  "popupStarChartLabel": {
+    "message": "Thank-You Star Chart"
+  },
+  "popupStarChartHint": {
+    "message": "Adds a star-chart option to the share menu of any tweet."
+  },
+  "flashStarChartOn": {
+    "message": "Star chart enabled"
+  },
+  "flashStarChartOff": {
+    "message": "Star chart disabled"
+  },
+  "featureBookmarkFoldersTitle": {
+    "message": "🔖 Bookmark folder menu"
+  },
+  "featureBookmarkFoldersDesc": {
+    "message": "Hover over a tweet bookmark button to pick a folder, see where it is saved, or create a folder. Requires X Premium."
+  },
+  "flashBookmarkFoldersOn": {
+    "message": "Bookmark folder menu enabled"
+  },
+  "flashBookmarkFoldersOff": {
+    "message": "Bookmark folder menu disabled"
+  },
+  "contentBookmarkMenuInFolder": {
+    "message": "In folder:"
+  },
+  "contentBookmarkMenuNotInAny": {
+    "message": "Not in any folder"
+  },
+  "contentBookmarkMenuCheckFailed": {
+    "message": "Couldn’t check current folder. Click a folder to retry."
+  },
+  "contentBookmarkMenuChecking": {
+    "message": "Checking current folder…"
+  },
+  "contentBookmarkMenuLoadingFolders": {
+    "message": "Loading bookmark folders…"
+  },
+  "contentBookmarkMenuLoadFailed": {
+    "message": "Failed to load folders. X Premium may be required."
+  },
+  "contentBookmarkMenuNoFolders": {
+    "message": "No folders yet"
+  },
+  "contentBookmarkMenuNewFolderPlaceholder": {
+    "message": "+ New folder (Enter)"
+  },
+  "featureBookmarkCountTitle": {
+    "message": "🔖 Show bookmark count"
+  },
+  "featureBookmarkCountDesc": {
+    "message": "Display the bookmark count next to each tweet's bookmark button on the timeline."
+  },
+  "flashBookmarkCountOn": {
+    "message": "Bookmark count enabled"
+  },
+  "flashBookmarkCountOff": {
+    "message": "Bookmark count disabled"
+  },
+  "contentStarChartTitleLabel": {
+    "message": "VELOCITY MONITOR"
+  },
+  "contentStarChartHeroEyebrow": {
+    "message": "THANK YOU FOR CARRYING THIS POST FURTHER"
+  },
+  "contentStarChartHeroTitle": {
+    "message": "Every light is a hand passing the post along."
+  },
+  "contentStarChartStatsSectionTitle": {
+    "message": "Overview"
+  },
+  "contentStarChartPeopleSectionTitle": {
+    "message": "Supporters"
+  },
+  "contentStarChartFilterAll": {
+    "message": "All"
+  },
+  "contentStarChartFilterRetweet": {
+    "message": "Retweet"
+  },
+  "contentStarChartFilterQuote": {
+    "message": "Quote"
+  },
+  "contentStarChartFilterBoth": {
+    "message": "Both"
+  },
+  "contentStarChartRiverPrev": {
+    "message": "Previous quote"
+  },
+  "contentStarChartRiverNext": {
+    "message": "Next quote"
+  },
+  "popupGrokPromptTitle": {
+    "message": "Grok comment prompt"
+  },
+  "popupGrokPromptHint": {
+    "message": "Write only the instructions — [推文内容] and the \"one code block per reply\" rule are added automatically if missing. Put [推文内容] yourself to control where the source tweet goes. Click AI Generate in a reply box, choose a template, then pick one generated option."
+  },
+  "popupGrokTempChatLabel": {
+    "message": "Use temporary chat (don't pollute Grok history)"
+  },
+  "flashGrokTempChatOn": {
+    "message": "Temporary chat enabled ✓"
+  },
+  "flashGrokTempChatOff": {
+    "message": "Temporary chat disabled"
+  },
+  "flashGrokPromptSaved": {
+    "message": "Grok prompt saved ✓"
+  },
+  "flashGrokPromptReset": {
+    "message": "Grok prompt reset ✓"
+  },
+  "badgeStyleLabel": {
+    "message": "🏷️ Badge style"
+  },
+  "badgeStylePillSolid": {
+    "message": "Pill solid"
+  },
+  "badgeStyleInlineClassic": {
+    "message": "Inline classic"
+  },
+  "flashBadgeStyleSaved": {
+    "message": "Badge style saved ✓"
+  },
+  "proBannerFree":       { "message": "Free" },
+  "proBannerPro":        { "message": "Pro active" },
+  "proBannerTrial":      { "message": "Trial — $DAYS$ days left", "placeholders": { "DAYS": { "content": "$1" } } },
+  "proBannerTrialOne":   { "message": "Trial — 1 day left" },
+  "proNudgeTrialEnd":    { "message": "Trial ends in $DAYS$ days — upgrade Pro to keep filtering.", "placeholders": { "DAYS": { "content": "$1" } } },
+  "proNudgeTrialEndOne": { "message": "Trial ends in 1 day — upgrade Pro to keep filtering." },
+  "proActivateLabel":    { "message": "Already bought? Enter your license key:" },
+  "proActivatePlaceholder": { "message": "creem-XXXXX..." },
+  "proActivateBtn":      { "message": "Activate" },
+  "proActivating":       { "message": "Activating…" },
+  "proActivatedOk":      { "message": "License activated. Reload x.com to apply." },
+  "proActErrFormat":     { "message": "License key format is invalid." },
+  "proActErrWorkerUnset":{ "message": "License proxy not configured yet — contact support." },
+  "proActErrGeneric":    { "message": "Activation failed: $ERROR$", "placeholders": { "ERROR": { "content": "$1" } } },
+  "proLicenseField":     { "message": "License" },
+  "proActivatedField":   { "message": "Activated" },
+  "proExpiresField":     { "message": "Renews" },
+  "proManageBtn":        { "message": "Manage subscription" },
+  "proDeactivateBtn":    { "message": "Deactivate" },
+  "proDeactivating":     { "message": "Deactivating…" },
+  "proDeactivatedOk":    { "message": "Deactivated." },
+  "proDeactivateErr":    { "message": "Deactivation failed." },
+  "rfTitle":         { "message": "Velocity filter" },
+  "rfLockedHint":    { "message": "Filter out low-velocity tweets and focus on viral content." },
+  "rfEnabled":       { "message": "Hide low-velocity tweets" },
+  "rfScopeLegend":   { "message": "Scope" },
+  "rfScopeHome":     { "message": "Home" },
+  "rfScopeList":     { "message": "Lists" },
+  "rfScopeProfile":  { "message": "Profiles" },
+  "rfScopeStatus":   { "message": "Tweet detail" },
+  "rfShortLegend":   { "message": "Short tweets — keep if either threshold passes" },
+  "rfLongLegend":    { "message": "X Articles (long-form) — keep if either threshold passes" },
+  "rfRatePerMin":    { "message": "views / min ≥" },
+  "rfAbsoluteViews": { "message": "total views ≥" },
+  "rfRuleHint":      { "message": "Rule: keep if (views/min > rate threshold) OR (total views > absolute threshold). Otherwise hide." },
+  "rfReset":         { "message": "Reset defaults" },
+  "rfSave":          { "message": "Save" },
+  "rfSavedOk":       { "message": "Saved ✓" },
+  "rfResetOk":       { "message": "Reset ✓" },
+  "featureLeaderboardResetPos":  { "message": "Reset leaderboard position" },
+  "featureLeaderboardResetDone": { "message": "Reset — please refresh the page." },
+  "accRateFilter":    { "message": "Velocity filter" },
+  "accRateFilterSub": { "message": "Advanced" },
+  "accLeaderboard":   { "message": "Leaderboard & badges" },
+  "accPro":           { "message": "License / Pro" },
+  "accOther":         { "message": "Other features & settings" },
+  "heroTrialDaysLeft": { "message": "$DAYS$ days left in trial", "placeholders": { "DAYS": { "content": "$1" } } },
+  "heroTrialDayOne":   { "message": "1 day left in trial" },
+  "heroProActive":     { "message": "Permanent Pro Active · All Features Unlocked" },
+  "communityDevBadge": { "message": "Community DEV Build" },
+  "communityDevSub":   { "message": "All local Pro features are enabled. Official license service and auto-updates belong to the Web Store build." },
+  "heroFreeTagline":   { "message": "Most features are free. A few advanced extras are Pro." },
+  "heroActivateExistingLink": { "message": "Activate existing license" },
+  "proScopeTitle":     { "message": "🌟 Unlocked Pro Privileges" },
+  "proScopeBody":      { "message": "Real-time velocity threshold filters, viral breakdown analysis, creator remix drafts, and leaderboard exports are permanently enabled." },
+  "proFreeTitle":      { "message": "⚡️ 100% Private & Local" },
+  "proFreeBody":       { "message": "All analytics, AI creator prompts, and filter rules execute directly on your device. Zero data collection and zero external dependency." },
+  "proWebsiteLink":    { "message": "Read the website guide" },
+  "proExpiresFieldPermanent": { "message": "Lifetime VIP (Permanent)" },
+  "cardFreeFeaturesTitle":  { "message": "Free features" },
+  "cardProFeaturesTitle":   { "message": "Pro features" },
+  "cardProFeaturesSub":     { "message": "A few advanced extras" },
+  "featureBadgeLabel":       { "message": "Velocity badges" },
+  "featureLeaderboardLabel": { "message": "Leaderboard panel" },
+  "featureCopyMdLabel":      { "message": "Copy as Markdown" },
+  "featureRateFilterLabel":  { "message": "Velocity filter" },
+  "featureColorCardLabel":   { "message": "Custom color palette" },
+  "featureWebhookLabel":     { "message": "Private hot-tweet monitor" },
+  "featureBarkLabel":        { "message": "Bark notifications" },
+  "chipEnabled":     { "message": "Enabled" },
+  "chipComingSoon":  { "message": "Coming soon" },
+  "btnConfigure":    { "message": "Configure →" },
+  "btnBack":         { "message": "Back" },
+  "btnCancel":       { "message": "Cancel" },
+  "footerPoweredBy": { "message": "Powered by" },
+  "toastM2Hint":     { "message": "Stay tuned — coming in v1.8.0" },
+  "activateTitle":   { "message": "Activate existing license" },
+  "advBadgeThresholdsTitle": { "message": "Badge thresholds & style" },
+  "advLeaderboardTitle":     { "message": "Leaderboard details" },
+  "advOtherFeaturesTitle":   { "message": "Other features" },
+  "advGrokShortTitle":       { "message": "AI reply — prompt templates" },
+  "aiProviderTitle": { "message": "AI comment provider" },
+  "aiProviderLabel": { "message": "Provider" },
+  "aiPlatformLabel": { "message": "Platform" },
+  "aiBaseUrlLabel": { "message": "Base URL" },
+  "aiModelLabel": { "message": "Model" },
+  "aiReplyCountLabel": { "message": "Replies" },
+  "aiApiKeyLabel": { "message": "API Key" },
+  "aiProviderHint": { "message": "Cloud providers send tweet context to the selected AI service. Ollama runs on your local machine." },
+  "aiProviderHintGrok": { "message": "X Grok uses your current X login state. No API key is needed." },
+  "aiProviderHintOllama": { "message": "Ollama runs locally. Make sure Ollama is running and the model has been downloaded." },
+  "aiProviderHintCloud": { "message": "Cloud providers send tweet text and reply context to the selected AI service." },
+  "aiProviderXGrok": { "message": "X Grok" },
+  "aiProviderXGrokDesc": { "message": "Use the current X session" },
+  "aiProviderOllama": { "message": "Ollama" },
+  "aiProviderOllamaDesc": { "message": "Local model service" },
+  "aiProviderOpenAICompatible": { "message": "OpenAI compatible" },
+  "aiProviderOpenAICompatibleDesc": { "message": "OpenAI, DeepSeek, OpenRouter" },
+  "aiServiceConfigTitle": { "message": "Service configuration" },
+  "aiGenerationSettingsTitle": { "message": "Generation settings" },
+  "aiCheckLoginStatus": { "message": "Check Grok readiness" },
+  "aiTestConnection": { "message": "Test connection" },
+  "aiTestRunning": { "message": "Testing connection..." },
+  "aiTestOk": { "message": "Connection test passed" },
+  "aiTestFailed": { "message": "Connection test failed" },
+  "tabPro":         { "message": "Pro" },
+  "tabFilter":      { "message": "Filter" },
+  "tabLeaderboard": { "message": "Leaderboard" },
+  "tabAi":          { "message": "AI replies" },
+  "tabAbout":       { "message": "About" },
+  "rfSubShort":     { "message": "Short tweet" },
+  "rfSubLong":      { "message": "X Article (long)" },
+  "comingListTitle":{ "message": "Coming in v1.8.0" },
+  "chipTierFree":   { "message": "Free" },
+  "chipTierTrial":  { "message": "Trial" },
+  "chipTierPro":    { "message": "Pro" },
+  "chipTrialDays":  { "message": "$DAYS$ days left", "placeholders": { "DAYS": { "content": "$1" } } },
+  "chipTrialOne":   { "message": "1 day left" },
+  "themeLabel":     { "message": "Theme" },
+  "themeSwitchToDark":  { "message": "Switch to dark" },
+  "themeSwitchToLight": { "message": "Switch to light" },
+  "themeFollowSystem":  { "message": "Following system" },
+  "languageLabel":      { "message": "Language" },
+  "languageHint":       { "message": "Controls the popup, page overlays, and default Grok prompt language." },
+  "languageAuto":       { "message": "Auto / follow browser" },
+  "languageZh":         { "message": "中文" },
+  "languageEn":         { "message": "English" },
+  "languageJa":         { "message": "日本語" },
+  "aboutUpdatesTitle": { "message": "Version Notes & Changelog" },
+  "aboutUpdatesDesc": { "message": "View the latest 21Zhao Viral Radar flagship features and release notes." },
+  "aboutShowUpdateNotes": { "message": "View Release Notes" },
+  "aboutShowUpdateNotesSent": { "message": "Opened feature release notes." },
+  "aboutShowUpdateNotesNoTab": { "message": "Opened feature release notes." },
+  "grokShortTemplateLabel": { "message": "Prompt template" },
+  "popupGrokEnterReplyLabel": { "message": "Press Enter to reply" },
+  "popupGrokEnterReplyHint": { "message": "When enabled, plain Enter sends the reply. Shift/Command/Ctrl/Alt+Enter keep their original behavior." },
+  "flashGrokEnterReplyOn": { "message": "Enter to reply enabled" },
+  "flashGrokEnterReplyOff": { "message": "Enter to reply disabled" },
+  "flashAiProviderSaved": { "message": "AI provider settings saved" },
+  "grokDefaultTemplateName": { "message": "Natural replies" },
+  "grokCustomTemplateName": { "message": "Template $N$", "placeholders": { "N": { "content": "$1" } } },
+  "contentLbHotOnly":      { "message": "Hot only" },
+  "contentLbHotProTitle":  { "message": "Hot posts filter" },
+  "contentLbHotProSub":    { "message": "Hide low-views tweets, keep what's actually spreading" },
+  "contentLbHotEnabledToast": { "message": "Hot only is on: posts that do not meet the hot-post threshold will be removed from this page." },
+  "contentLbHotActiveNotice": { "message": "Hot only is on. Posts below the threshold are hidden." },
+  "contentLbHotScopeTitle": { "message": "Applies to" },
+  "contentLbHotScopeHome": { "message": "Home / For you" },
+  "contentLbHotScopeList": { "message": "Lists" },
+  "contentLbHotScopeProfile": { "message": "Profiles" },
+  "contentLbHotScopeStatus": { "message": "Post detail" },
+  "contentLbHotScopeCurrent": { "message": "Current" },
+  "contentLbHotDetails":   { "message": "All features open" },
+  "contentLbHotOpenSite":  { "message": "All features open" },
+  "contentUpdateTitle": { "message": "X Viral Radar · What's New" },
+  "contentUpdateSubtitle": { "message": "21Zhao Studio Custom Edition · Unleash professional creation & monitoring:" },
+  "contentUpdateItemProTitle": { "message": "⚡ All Features Fully Open" },
+  "contentUpdateItemProBody": { "message": "All features natively built-in and fully open: velocity filters, advanced rules, and hot-only timeline are accessible without restrictions or paywalls." },
+  "contentUpdateItemGeminiTitle": { "message": "🤖 Gemini Direct & Full Model Ecosystem" },
+  "contentUpdateItemGeminiBody": { "message": "Choose your AI provider in settings: Google Gemini 2.0 Flash direct connection, OpenAI-compatible APIs, DeepSeek, OpenRouter, or local Ollama." },
+  "contentUpdateItemViralAiTitle": { "message": "🔥 Viral Breakdown & Remix" },
+  "contentUpdateItemViralAiBody": { "message": "8 professional creator prompt templates: 1-click breakdown of viral hooks and emotion triggers, plus instant high-converting remix drafts." },
+  "contentUpdateItemLbQuickAiTitle": { "message": "⚡️ Leaderboard One-Click AI Reply" },
+  "contentUpdateItemLbQuickAiBody": { "message": "One-click sparkle button on every leaderboard row smoothly jumps to the tweet, focuses the reply area, and opens the 8 AI templates menu." },
+  "contentUpdateItemAiProviderTitle": { "message": "AI comment providers" },
+  "contentUpdateItemAiProviderBody": { "message": "Open Settings → AI comment generation to choose X Grok, OpenAI-compatible providers, DeepSeek, OpenRouter, or local Ollama." },
+  "contentUpdateItemReplyToolsTitle": { "message": "Press Enter to reply" },
+  "contentUpdateItemReplyToolsBody": { "message": "Added an option to send comments with Enter. Enable it in Settings → Other features → Press Enter to reply, then you no longer need Command + Enter in reply boxes." },
+  "contentUpdateItemHotOnlyTitle": { "message": "Hot only state is clearer" },
+  "contentUpdateItemHotOnlyBody": { "message": "When Hot only is enabled, posts below the threshold are removed from the page. You can choose where it applies in the Popup or floating panel settings." },
+  "contentUpdateItemBookmarkToolsTitle": { "message": "Bookmark tools are easier to find" },
+  "contentUpdateItemBookmarkToolsBody": { "message": "In Settings → Other features, enable the bookmark folder menu and bookmark counts to pick save folders, see saved locations, and show bookmark counts on the timeline." },
+  "contentUpdateItemFilterRulesTitle": { "message": "Content filtering is steadier" },
+  "contentUpdateItemFilterRulesBody": { "message": "Content filtering now avoids more false positives around normal Telegram mentions, while catching additional WeChat / Telegram funnel patterns in replies and profile bios." },
+  "contentUpdateDismiss": { "message": "Get Started" },
+  "cfTitle":        { "message": "Content filter" },
+  "cfLockedHint":   { "message": "Content filtering is free. You can enable it here." },
+  "cfEnabled":      { "message": "Hide adult / ad / funnel replies" },
+  "cfLevel":        { "message": "Filter strength" },
+  "cfLevelLight":   { "message": "Light" },
+  "cfLevelStandard":{ "message": "Standard" },
+  "cfLevelStrict":  { "message": "Strict" },
+  "cfRuleCounts":   { "message": "$COUNT$ built-in rules active, $CUSTOM$ custom.", "placeholders": { "COUNT": { "content": "$1" }, "CUSTOM": { "content": "$2" } } },
+  "cfScopeHint":    { "message": "Only applies to reply areas on tweet detail pages. Home, search, profiles, and the main tweet are not filtered." },
+  "cfCustomTitle":  { "message": "Custom rules" },
+  "cfWhitelistTitle": { "message": "Whitelist / blacklist settings" },
+  "cfValue":        { "message": "Keyword / regex / domain" },
+  "cfAddRule":      { "message": "Add rule" },
+  "cfDeleteRule":   { "message": "Delete rule" },
+  "cfCustomEmpty":  { "message": "No custom rules yet." },
+  "cfWhitelistFollowing": { "message": "Always allow accounts you follow" },
+  "cfWhitelistHandles": { "message": "Whitelisted handles" },
+  "cfBlacklistHandles": { "message": "Blocked handles" },
+  "cfWhitelistDomains": { "message": "Whitelisted domains" },
+  "cfAllRulesTitle": { "message": "All rules" },
+  "cfBuiltinRule":  { "message": "Built-in" },
+  "cfCustomRule":   { "message": "Custom" },
+  "cfNoRules":      { "message": "No rules." },
+  "cfRuleHint":     { "message": "Rules run locally in your browser. Nothing is uploaded. Whitelist runs first, then hard rules and severity thresholds." },
+  "cfRulesSourceBundled": { "message": "Rules source: bundled" },
+  "cfRulesSourceRemote":  { "message": "Rules source: remote · updated $AGO$", "placeholders": { "AGO": { "content": "$1" } } },
+  "cfRulesJustNow":       { "message": "just now" },
+  "cfRulesMinutesAgo":    { "message": "$N$m ago", "placeholders": { "N": { "content": "$1" } } },
+  "cfRulesHoursAgo":      { "message": "$N$h ago", "placeholders": { "N": { "content": "$1" } } },
+  "cfRulesDaysAgo":       { "message": "$N$d ago", "placeholders": { "N": { "content": "$1" } } },
+  "cfRulesRefresh":       { "message": "Check for updates" },
+  "cfRulesRefreshing":    { "message": "Fetching…" },
+  "cfRulesRefreshOk":     { "message": "Rules updated." },
+  "cfRulesRefreshErr":    { "message": "Fetch failed, please retry later." },
+  "cfAutoSaved":          { "message": "Auto-saved" },
+  "advAppearanceTitle": { "message": "Appearance" }
+}

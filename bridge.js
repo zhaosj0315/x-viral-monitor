@@ -1,0 +1,1703 @@
+const DEFAULT_THRESHOLDS = {
+  trending: 1000,
+  viral: 10000,
+};
+const DEFAULT_COLUMNS = [
+  { id: 'rank',     visible: true  },
+  { id: 'icon',     visible: true  },
+  { id: 'handle',   visible: false },
+  { id: 'preview',  visible: true  },
+  { id: 'views',    visible: true  },
+  { id: 'velocity', visible: true  },
+];
+const KNOWN_COLUMN_IDS = DEFAULT_COLUMNS.map((c) => c.id);
+const LANGUAGE_KEY = 'language';
+const SUPPORTED_LANGUAGE_IDS = ['auto', 'zh_CN', 'en', 'ja'];
+
+function normalizeLanguage(raw) {
+  return SUPPORTED_LANGUAGE_IDS.includes(raw) ? raw : 'auto';
+}
+
+function getBrowserLocaleId() {
+  try {
+    const navLangs = Array.isArray(navigator?.languages) && navigator.languages.length
+      ? navigator.languages
+      : [navigator?.language || ''];
+    for (const l of navLangs) {
+      const lower = String(l || '').toLowerCase();
+      if (lower.startsWith('zh')) return 'zh_CN';
+      if (lower.startsWith('ja')) return 'ja';
+    }
+    const ui = chrome?.i18n?.getUILanguage?.() || '';
+    const lower = ui.toLowerCase();
+    if (lower.startsWith('zh')) return 'zh_CN';
+    if (lower.startsWith('ja')) return 'ja';
+  } catch (_) {}
+  return 'zh_CN';
+}
+
+function getEffectiveLanguageId(pref = 'auto') {
+  const normalized = normalizeLanguage(pref);
+  return normalized === 'auto' ? getBrowserLocaleId() : normalized;
+}
+
+function normalizeSubstitutions(substitutions) {
+  if (substitutions == null) return [];
+  return Array.isArray(substitutions) ? substitutions.map(String) : [String(substitutions)];
+}
+
+function formatLocaleMessage(entry, substitutions) {
+  if (!entry?.message) return '';
+  const subs = normalizeSubstitutions(substitutions);
+  let message = String(entry.message).replace(/\$\$/g, '\u0000');
+  const placeholders = entry.placeholders || {};
+  for (const [name, meta] of Object.entries(placeholders)) {
+    const match = String(meta?.content || '').match(/^\$(\d+)$/);
+    const value = match ? (subs[Number(match[1]) - 1] ?? '') : String(meta?.content || '');
+    message = message.replace(new RegExp(`\\$${name}\\$`, 'gi'), value);
+  }
+  message = message.replace(/\$(\d+)/g, (_, n) => subs[Number(n) - 1] ?? '');
+  return message.replace(/\u0000/g, '$');
+}
+
+const localeBundleCache = new Map();
+
+async function loadLocaleBundle(languageId) {
+  if (localeBundleCache.has(languageId)) return localeBundleCache.get(languageId);
+  try {
+    const res = await fetch(chrome.runtime.getURL(`_locales/${languageId}/messages.json`));
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    localeBundleCache.set(languageId, json);
+    return json;
+  } catch (_) {
+    localeBundleCache.set(languageId, null);
+    return null;
+  }
+}
+
+const GROK_DEFAULTS_BY_LANGUAGE = {
+  zh_CN: {
+    promptTemplates: [
+      { id: 'default', name: '默认评论', prompt: '[推文内容]\n\n为我生成针对该推文的10条评论, 每条评论只包含可直接发布的评论正文，用代码块包裹。' },
+      { id: 'viral-breakdown', name: '🔥 爆款深度拆解', prompt: '[推文内容]\n\n作为顶级社交媒体增长专家，请拆解这条推文为何能爆火：分析其选题切入点、开头Hook钩子、激发的情绪共鸣点、叙事节奏与底层传播逻辑，并提炼一条可复用的爆款公式，每段要点用代码块包裹。' },
+      { id: 'viral-remix', name: '✍️ 结构仿写二创', prompt: '[推文内容]\n\n提取这条推文的底层叙事骨架与痛点切入逻辑，基于该结构为我生成5条适用于不同细分领域（如AI应用、个人成长、独立开发、效率神器）的高赞原创推文草稿，每条草稿用代码块包裹。' },
+      { id: 'short-cn', name: '中文短评', prompt: '[推文内容]\n\n为该推文生成10条自然、简短、像真人回复的中文评论, 每条评论只包含可直接发布的评论正文，用代码块包裹。' },
+      { id: 'sharp', name: '犀利观点', prompt: '[推文内容]\n\n为该推文生成10条有观点、有信息密度、但不人身攻击的评论, 每条评论只包含可直接发布的评论正文，用代码块包裹。' },
+      { id: 'tieba-laoge', name: '贴吧老哥', prompt: '[推文内容]\n\n用贴吧老哥的语气为该推文生成10条评论。整体阴阳怪气，但不带脏字、不人身攻击；保持口语感，不要装文艺、不要写得像新闻评论；每条评论控制在 30 字以内，简短精悍。\n每条评论只包含可直接发布的评论正文，用代码块包裹。' },
+      { id: 'point-by-point', name: '针对性回应', prompt: '[推文内容]\n\n为该推文生成10条评论。要求：每条都针对推文里的一个具体观点、论据或例子回应（赞同/质疑/补充），不要笼统夸奖；语气自然像真人；每条评论只包含可直接发布的评论正文，用代码块包裹。' },
+      { id: 'deep-dive', name: '深度回应', prompt: '[推文内容]\n\n挑出这条推文里最值得讨论的3-5个点，围绕这些点生成10条有信息密度的评论（延伸思考、反例、或个人经验），每条评论只包含可直接发布的评论正文，用代码块包裹。' },
+      { id: 'native-english', name: '🇺🇸 地道英文互动', prompt: '[推文内容]\n\nWrite 10 natural, witty, and engaging English replies to this X post:\n- Sound like authentic native Twitter users, not formal AI or corporate PR\n- Add thoughtful perspective, mild counterpoint, or a sharp question\n- No generic praise, no hashtags, keep each reply concise (10-30 words)\n- Output only ready-to-post reply text, each inside its own code block.' },
+    ],
+  },
+  en: {
+    promptTemplates: [
+      { id: 'viral-breakdown', name: '🔥 爆款深度拆解', prompt: '[推文内容]\n\n作为顶级社交媒体增长专家，请拆解这条推文为何能爆火：分析其选题切入点、开头Hook钩子、激发的情绪共鸣点、叙事节奏与底层传播逻辑，并提炼一条可复用的爆款公式，每段要点用代码块包裹。' },
+      { id: 'viral-remix', name: '✍️ 结构仿写二创', prompt: '[推文内容]\n\n提取这条推文的底层叙事骨架与痛点切入逻辑，基于该结构为我生成5条适用于不同细分领域（如AI应用、个人成长、独立开发、效率神器）的高赞原创推文草稿，每条草稿用代码块包裹。' },
+      { id: 'short-cn', name: '中文短评', prompt: '[推文内容]\n\n为该推文生成10条自然、简短、像真人回复的中文评论, 每条评论只包含可直接发布的评论正文，用代码块包裹。' },
+      { id: 'sharp-cn', name: '犀利观点', prompt: '[推文内容]\n\n为该推文生成10条有观点、有信息密度、但不人身攻击的评论, 每条评论只包含可直接发布的评论正文，用代码块包裹。' },
+      { id: 'default', name: 'Natural replies', prompt: '[推文内容]\n\nWrite 10 natural English replies to this X post. Requirements:\n- Sound like real X replies, not marketing copy or a formal article comment\n- Each reply should make one clear point: agree, add context, ask a sharp question, or offer a mild counterpoint\n- Avoid generic praise, outrage bait, personal attacks, and hashtags\n- Keep each reply concise, roughly 8-28 words\n- Output only ready-to-post reply text, each inside its own code block.' },
+      { id: 'sharp', name: 'Sharp but fair', prompt: '[推文内容]\n\nWrite 10 English replies to this X post with a sharper point of view. Requirements:\n- Be specific, thoughtful, and concise\n- You may challenge assumptions, add a counterexample, or clarify the tradeoff\n- Stay fair; no insults, no dunking, no culture-war bait\n- Keep each reply around 12-35 words\n- Output only ready-to-post reply text, each inside its own code block.' },
+      { id: 'casual-en', name: 'Casual short replies', prompt: '[推文内容]\n\nWrite 10 casual English replies for this X post. Requirements:\n- Conversational and human, like a normal user replying on X\n- Short, direct, and not over-polished\n- Avoid cringe slang, hashtags, and corporate tone\n- Keep each reply under 25 words\n- Output only ready-to-post reply text, each inside its own code block.' },
+      { id: 'point-by-point', name: 'Point-by-point', prompt: '[推文内容]\n\nWrite 10 English replies to this X post. Requirements:\n- Each reply responds to one specific claim, argument, example, or conclusion from the post\n- Mix agreement, critique, added context, and follow-up questions\n- Avoid vague praise like \u201cgreat insights\u201d\n- Keep each reply specific and ready to post\n- Output only the reply text, each inside its own code block.' },
+      { id: 'deep-dive', name: 'Deeper discussion', prompt: '[推文内容]\n\nIdentify 3-5 discussion-worthy points in this X post and write 10 English replies. Requirements:\n- Each reply focuses on one concrete point\n- Add a useful extension, counterexample, practical constraint, or personal-experience angle\n- Sound natural, not like a summary\n- Output only ready-to-post reply text, each inside its own code block.' },
+    ],
+  },
+  ja: {
+    promptTemplates: [
+      { id: 'default', name: '自然な返信', prompt: '[推文内容]\n\nこの X 投稿に対する自然な日本語返信を 10 件作成してください。条件：\n- 実際の X の返信らしく、宣伝文や記事コメントのようにしない\n- 各返信は、共感・補足・軽い疑問・別視点のいずれかを 1 つだけ扱う\n- 空っぽな称賛、過度な煽り、個人攻撃は避ける\n- 1 件あたり 15〜45 字程度\n- そのまま投稿できる本文だけを、各返信ごとにコードブロックで出力する。' },
+      { id: 'sharp', name: '鋭めだが丁寧', prompt: '[推文内容]\n\nこの X 投稿に対する日本語返信を 10 件作成してください。少し鋭い視点で、ただし丁寧に。条件：\n- 前提への疑問、反例、補足、論点整理のいずれかを入れる\n- 皮肉、人格攻撃、決めつけは避ける\n- 1 件あたり 20〜55 字程度\n- そのまま投稿できる本文だけを、各返信ごとにコードブロックで出力する。' },
+      { id: 'casual-ja', name: '短めの口語返信', prompt: '[推文内容]\n\nこの X 投稿に対する短い日本語返信を 10 件作成してください。条件：\n- 口語的で自然、AI っぽくしない\n- くだけすぎず、普通のユーザーの返信に見える文体\n- 1 件あたり 10〜30 字程度\n- そのまま投稿解决本文だけを、各返信ごとにコードブロックで出力する。' },
+      { id: 'point-by-point', name: '論点への返信', prompt: '[推文内容]\n\nこの X 投稿への日本語の返信を 10 件作成してください。条件：\n- 各返信は投稿中の具体的な主張、根拠、例、結論のどれかに反応する\n- 賛同、疑問、補足、追加の問いをバランスよく混ぜる\n- 「勉強になりました」のような抽象的な感想だけにしない\n- 1 件あたり 30〜80 字程度\n- そのまま投稿できる本文だけを、各返信ごとにコードブロックで出力する。' },
+      { id: 'viral-breakdown', name: '🔥 爆款深度拆解', prompt: '[推文内容]\n\n作为顶级社交媒体增长专家，请拆解这条推文为何能爆火：分析其选题切入点、开头Hook钩子、激发的情绪共鸣点、叙事节奏与底层传播逻辑，并提炼一条可复用的爆款公式，每段要点用代码块包裹。' },
+      { id: 'deep-dive', name: '深めの議論', prompt: '[推文内容]\n\nこの X 投稿から議論すべきポイントを 3〜5 個選び、日本語の返信を 10 件作成してください。条件：\n- 各返信は 1 つの具体的な論点に絞る\n- 追加視点、反例、現実的な制约、個人的な経験の角度を入れる\n- 要約のようにせず、自然な返信文にする\n- そのまま投稿できる本文だけを、各返信ごとにコードブロックで出力する。' },
+    ],
+  },
+};
+
+function getLocalizedGrokDefaults(languageId = getBrowserLocaleId()) {
+  const lang = GROK_DEFAULTS_BY_LANGUAGE[languageId] ? languageId : 'en';
+  const defs = GROK_DEFAULTS_BY_LANGUAGE[lang];
+  return {
+    grokCommentPrompt: defs.promptTemplates[0].prompt,
+    grokPromptTemplates: defs.promptTemplates.map((tpl) => ({ ...tpl })),
+    grokSelectedPromptId: defs.promptTemplates[0].id,
+  };
+}
+
+const LOCALIZED_GROK_DEFAULTS = getLocalizedGrokDefaults(getBrowserLocaleId());
+const CONTENT_MESSAGE_KEYS = [
+  'contentViews',
+  'contentLikes',
+  'contentRetweets',
+  'contentReplies',
+  'contentBookmarks',
+  'contentVelocity',
+  'contentViralScore',
+  'contentPosted',
+  'contentLeaderboardTitle',
+  'contentLeaderboardDragToMove',
+  'contentLeaderboardBackToPrevious',
+  'contentLeaderboardEdgeHide',
+  'contentLeaderboardEdgeShow',
+  'contentLeaderboardSettings',
+  'contentLeaderboardClose',
+  'contentLeaderboardCloseSettings',
+  'contentLeaderboardSettingsPanelTitle',
+  'contentLeaderboardColumns',
+  'contentLeaderboardSettingsAutoSave',
+  'contentLeaderboardTotalViews',
+  'contentLeaderboardAiReply',
+  'featureLeaderboardShowTop',
+  'featureLeaderboardEdgeHideTitle',
+  'featureLeaderboardEdgeHideDesc',
+  'popupColRank',
+  'popupColIcon',
+  'popupColHandle',
+  'popupColPreview',
+  'popupColViews',
+  'popupColVelocity',
+  'contentCopyMdLabel',
+  'contentCopyMdDone',
+  'contentCopyMdAttribution',
+  'contentCopyMdNoTweetFound',
+  'contentCopyMdCopyFailed',
+  'contentCopyTweetCommentsLabel',
+  'contentCopyTweetCommentsDone',
+  'contentCopyTweetCommentsHeading',
+  'contentFallbackTweetLabel',
+  'contentStarChartMenuLabel',
+  'contentStarChartAttribution',
+  'contentStarChartTitle',
+  'contentStarChartLoading',
+  'contentStarChartProgress',
+  'contentStarChartRateLimited',
+  'contentStarChartDone',
+  'contentStarChartDoneTruncated',
+  'contentStarChartError',
+  'contentStarChartNoTweetFound',
+  'contentStarChartModuleNotLoaded',
+  'contentStarChartLegendRT',
+  'contentStarChartLegendQuote',
+  'contentStarChartLegendBoth',
+  'contentStarChartClose',
+  'contentStarChartStatRetweets',
+  'contentStarChartStatQuotes',
+  'contentStarChartStatSupporters',
+  'contentStarChartStatSpan',
+  'contentStarChartSearchPlaceholder',
+  'contentStarChartRiverTitle',
+  'contentStarChartRiverEmpty',
+  'contentStarChartEmpty',
+  'contentStarChartReset',
+  'contentStarChartHeroEyebrow',
+  'contentStarChartHeroTitle',
+  'contentStarChartTitleLabel',
+  'contentStarChartStatsSectionTitle',
+  'contentStarChartPeopleSectionTitle',
+  'contentStarChartFilterAll',
+  'contentStarChartFilterRetweet',
+  'contentStarChartFilterQuote',
+  'contentStarChartFilterBoth',
+  'contentStarChartRiverPrev',
+  'contentStarChartRiverNext',
+  // v1.7.0 #4 — leaderboard "hot only" Pro-feature toggle (content.js).
+  // These must stay in lock-step with _locales/* and content.js i18n() calls.
+  // Contract test in tests/popup-dashboard.test.js asserts every key
+  // referenced via i18n(...) in content.js is present here.
+  'contentLbHotOnly',
+  'contentLbHotProTitle',
+  'contentLbHotProSub',
+  'contentLbHotEnabledToast',
+  'contentLbHotActiveNotice',
+  'contentLbHotScopeTitle',
+  'contentLbHotScopeHome',
+  'contentLbHotScopeList',
+  'contentLbHotScopeProfile',
+  'contentLbHotScopeStatus',
+  'contentLbHotScopeCurrent',
+  'contentLbHotDetails',
+  'contentLbHotOpenSite',
+  'contentUpdateTitle',
+  'contentUpdateSubtitle',
+  'contentUpdateItemAiProviderTitle',
+  'contentUpdateItemAiProviderBody',
+  'contentUpdateItemReplyToolsTitle',
+  'contentUpdateItemReplyToolsBody',
+  'contentUpdateItemHotOnlyTitle',
+  'contentUpdateItemHotOnlyBody',
+  'contentUpdateItemBookmarkToolsTitle',
+  'contentUpdateItemBookmarkToolsBody',
+  'contentUpdateItemFilterRulesTitle',
+  'contentUpdateItemFilterRulesBody',
+  'contentUpdateDismiss',
+  'contentBookmarkMenuInFolder',
+  'contentBookmarkMenuNotInAny',
+  'contentBookmarkMenuCheckFailed',
+  'contentBookmarkMenuChecking',
+  'contentBookmarkMenuLoadingFolders',
+  'contentBookmarkMenuLoadFailed',
+  'contentBookmarkMenuNoFolders',
+  'contentBookmarkMenuNewFolderPlaceholder',
+];
+
+const DEFAULT_FEATURES = {
+  featureVelocityLeaderboard: true,
+  featureCopyAsMarkdown: true,
+  featureStarChart: true,
+  featureBookmarkFolders: false,
+  featureBookmarkTimelineInject: false,
+  bookmarkTimelineInjectFolderIds: [],
+  bookmarkTimelineInjectEvery: 20,
+  showBookmarkCount: true,
+  leaderboardEdgeHideEnabled: true,
+  badgeStyle: 'pill-solid',
+  leaderboardCount: 10,
+  leaderboardColumns: DEFAULT_COLUMNS,
+  grokCommentPrompt: LOCALIZED_GROK_DEFAULTS.grokCommentPrompt,
+  grokPromptTemplates: LOCALIZED_GROK_DEFAULTS.grokPromptTemplates,
+  grokSelectedPromptId: LOCALIZED_GROK_DEFAULTS.grokSelectedPromptId,
+  grokTemporaryChat: true,
+  grokEnterToReply: false,
+  aiProvider: 'x-grok',
+  aiOpenAIPlatform: 'openai',
+  aiBaseUrl: 'https://api.openai.com/v1',
+  aiModel: 'gpt-4o-mini',
+  aiReplyCount: 10,
+  aiLanguage: 'auto',
+  language: 'auto',
+};
+const STORAGE_DEFAULTS = { ...DEFAULT_THRESHOLDS, ...DEFAULT_FEATURES };
+const RELEASE_NOTES_SEEN_KEY = 'xvm_release_notes_seen_version';
+const RELEASE_NOTES_AUTO_VERSIONS = new Set(['1.18.0']);
+const BOOKMARK_TIMELINE_QID_CACHE_KEY = 'xvm_bookmark_timeline_query_id';
+// Persisted per-folder cache of injected bookmark entries so the timeline can be
+// hydrated without a network round-trip, and auto-refreshed in the background
+// whenever an x.com tab is open (no need to manually open each folder).
+const BOOKMARK_TIMELINE_CACHE_KEY = 'bookmarkTimelineCache';
+const BOOKMARK_TIMELINE_SETTINGS_KEY = 'bookmarkTimelineSettings';
+const BOOKMARK_TIMELINE_SEEN_KEY = 'bookmarkTimelineSeen';
+const BOOKMARK_TIMELINE_SYNC_MIGRATED_KEY = 'bookmarkTimelineSyncSettingsRemoved';
+const BOOKMARK_TIMELINE_AUTO_ATTEMPT_KEY = 'bookmarkTimelineAutoAttemptAt';
+const BOOKMARK_TIMELINE_MANUAL_ATTEMPT_KEY = 'bookmarkTimelineManualAttemptAt';
+const BOOKMARK_TIMELINE_AUTO_TTL_MS = 30 * 60 * 1000;
+const BOOKMARK_TIMELINE_AUTO_LOCK = 'xvm-bookmark-timeline-auto-refresh';
+const BOOKMARK_TIMELINE_STORAGE_LOCK = 'xvm-bookmark-timeline-storage';
+const BOOKMARK_TIMELINE_MANUAL_LOCK = 'xvm-bookmark-timeline-manual-refresh';
+const BOOKMARK_TIMELINE_MANUAL_TTL_MS = 30 * 1000;
+const BOOKMARK_TIMELINE_MAX_ENTRIES_PER_FOLDER = 120;
+// X returns ~20 tweets per BookmarkFolderTimeline page regardless of count, so we
+// must follow the bottom cursor to gather a folder's full contents (runaway guard).
+const BOOKMARK_TIMELINE_MAX_PAGES = 10;
+let bookmarkTimelineAutoTimer = null;
+const X_BEARER = 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA';
+const OP_LIST = { name: 'BookmarkFoldersSlice', qid: 'i78YDd0Tza-dV4SYs58kRg' };
+const OP_BOOKMARK_FOLDER_TIMELINE = { name: 'BookmarkFolderTimeline', qid: 'oKopHt25pa6yhDn1ek7Qng' };
+const X_MAIN_BUNDLE_RE = /https:\/\/abs\.twimg\.com\/responsive-web\/client-web\/main\.[a-f0-9]+\.js/;
+let bookmarkFolderTimelineQid = OP_BOOKMARK_FOLDER_TIMELINE.qid;
+let bookmarkTimelineTxSeq = 0;
+let bookmarkTimelineFeatureKeys = null;
+const BOOKMARK_TIMELINE_FEATURES = {
+  rweb_video_screen_enabled: false,
+  rweb_cashtags_enabled: true,
+  profile_label_improvements_pcf_label_in_post_enabled: true,
+  responsive_web_profile_redirect_enabled: false,
+  rweb_tipjar_consumption_enabled: false,
+  verified_phone_label_enabled: false,
+  creator_subscriptions_tweet_preview_api_enabled: true,
+  responsive_web_graphql_timeline_navigation_enabled: true,
+  responsive_web_graphql_skip_user_profile_image_extensions_enabled: false,
+  premium_content_api_read_enabled: false,
+  communities_web_enable_tweet_community_results_fetch: true,
+  c9s_tweet_anatomy_moderator_badge_enabled: true,
+  responsive_web_grok_analyze_button_fetch_trends_enabled: false,
+  responsive_web_grok_analyze_post_followups_enabled: true,
+  rweb_cashtags_composer_attachment_enabled: true,
+  responsive_web_jetfuel_frame: true,
+  responsive_web_grok_share_attachment_enabled: true,
+  responsive_web_grok_annotations_enabled: true,
+  articles_preview_enabled: true,
+  responsive_web_edit_tweet_api_enabled: true,
+  graphql_is_translatable_rweb_tweet_is_translatable_enabled: true,
+  view_counts_everywhere_api_enabled: true,
+  longform_notetweets_consumption_enabled: true,
+  responsive_web_twitter_article_tweet_consumption_enabled: true,
+  content_disclosure_indicator_enabled: true,
+  content_disclosure_ai_generated_indicator_enabled: true,
+  responsive_web_grok_show_grok_translated_post: true,
+  responsive_web_grok_analysis_button_from_backend: true,
+  rweb_conversational_replies_downvote_enabled: false,
+  post_ctas_fetch_enabled: false,
+  freedom_of_speech_not_reach_fetch_enabled: true,
+  standardized_nudges_misinfo: true,
+  tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled: true,
+  longform_notetweets_rich_text_read_enabled: true,
+  longform_notetweets_inline_media_enabled: false,
+  responsive_web_grok_image_annotation_enabled: true,
+  responsive_web_grok_imagine_annotation_enabled: true,
+  responsive_web_grok_community_note_auto_translation_is_enabled: true,
+  responsive_web_enhance_cards_enabled: false,
+};
+const BOOKMARK_TIMELINE_FIELD_TOGGLES = { withArticlePlainText: false };
+
+function requestBookmarkTimelineTxId(path) {
+  return new Promise((resolve) => {
+    const requestId = `xvm-bti-tx-${Date.now()}-${++bookmarkTimelineTxSeq}`;
+    const cleanup = () => {
+      clearTimeout(timer);
+      window.removeEventListener('message', onMessage);
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      resolve('');
+    }, 4000);
+    function onMessage(event) {
+      if (event.source !== window) return;
+      if (event.data?.type !== 'XVM_BOOKMARK_TIMELINE_TXID_RESPONSE') return;
+      if (event.data.requestId !== requestId) return;
+      cleanup();
+      resolve(event.data.ok ? String(event.data.txId || '') : '');
+    }
+    window.addEventListener('message', onMessage);
+    window.postMessage({
+      type: 'XVM_BOOKMARK_TIMELINE_TXID_REQUEST',
+      requestId,
+      method: 'GET',
+      path,
+    }, '*');
+  });
+}
+
+function applyBookmarkTimelineQueryId(qid) {
+  if (!/^[A-Za-z0-9_-]{15,30}$/.test(String(qid || ''))) return false;
+  bookmarkFolderTimelineQid = String(qid);
+  return true;
+}
+
+function normalizeLeaderboardCount(v) {
+  const n = Number.parseInt(v, 10);
+  if (!Number.isFinite(n)) return 10;
+  return Math.max(1, Math.min(50, n));
+}
+
+function normalizeLeaderboardColumns(raw) {
+  if (!Array.isArray(raw)) return DEFAULT_COLUMNS.map((c) => ({ ...c }));
+  const seen = new Set();
+  const out = [];
+  for (const c of raw) {
+    if (!c || typeof c.id !== 'string') continue;
+    if (!KNOWN_COLUMN_IDS.includes(c.id)) continue;
+    if (seen.has(c.id)) continue;
+    seen.add(c.id);
+    out.push({ id: c.id, visible: !!c.visible });
+  }
+  // Append any columns the user's stored config is missing (forward compat)
+  for (const def of DEFAULT_COLUMNS) {
+    if (!seen.has(def.id)) out.push({ ...def });
+  }
+  return out;
+}
+
+function normalizeGrokPromptTemplates(raw, legacyPrompt) {
+  const source = Array.isArray(raw) && raw.length
+    ? raw
+    : [{ id: 'default', name: '默认评论', prompt: legacyPrompt || DEFAULT_FEATURES.grokCommentPrompt }];
+  const seen = new Set();
+  const out = [];
+  for (const item of source) {
+    const prompt = String(item?.prompt || '').trim();
+    if (!prompt) continue;
+    const id = String(item?.id || `tpl-${out.length + 1}`).trim() || `tpl-${out.length + 1}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    out.push({
+      id,
+      name: String(item?.name || `模板 ${out.length + 1}`).trim() || `模板 ${out.length + 1}`,
+      prompt,
+    });
+  }
+  return out.length ? out : DEFAULT_FEATURES.grokPromptTemplates.map((tpl) => ({ ...tpl }));
+}
+
+function normalizeThresholds(raw) {
+  const trending = Number.parseInt(raw?.trending, 10);
+  const viral = Number.parseInt(raw?.viral, 10);
+  const next = {
+    trending: Number.isFinite(trending) && trending > 0 ? trending : DEFAULT_THRESHOLDS.trending,
+    viral: Number.isFinite(viral) && viral > 0 ? viral : DEFAULT_THRESHOLDS.viral,
+  };
+  if (next.viral <= next.trending) {
+    next.viral = Math.max(next.trending + 1, DEFAULT_THRESHOLDS.viral);
+  }
+  return next;
+}
+
+async function getLocalizedMessages(languagePref) {
+  const languageId = getEffectiveLanguageId(languagePref);
+  const bundle = normalizeLanguage(languagePref) === 'auto' ? null : await loadLocaleBundle(languageId);
+  const out = {};
+  for (const key of CONTENT_MESSAGE_KEYS) {
+    const local = formatLocaleMessage(bundle?.[key]);
+    if (local) {
+      out[key] = local;
+      continue;
+    }
+    try { out[key] = chrome.i18n.getMessage(key) || key; }
+    catch (_) { out[key] = key; }
+  }
+  return out;
+}
+
+async function pushSettings(raw) {
+  const localBookmarkSettings = await readBookmarkTimelineSettings();
+  const bookmarkTimelineSeenTweetIds = await readBookmarkTimelineSeenTweetIds(localBookmarkSettings.accountId);
+  window.postMessage({
+    type: 'XVM_SETTINGS_UPDATE',
+    thresholds: normalizeThresholds(raw),
+    featureVelocityLeaderboard: !!raw?.featureVelocityLeaderboard,
+    featureCopyAsMarkdown: raw?.featureCopyAsMarkdown !== false,
+    featureStarChart: raw?.featureStarChart !== false,
+    featureBookmarkFolders: !!raw?.featureBookmarkFolders,
+    featureBookmarkTimelineInject: localBookmarkSettings.enabled,
+    bookmarkTimelineInjectFolderIds: globalThis.__xvmBookmarkTimelineStorage?.sanitizeFolderIds?.(
+      localBookmarkSettings.folderIds,
+    ) || [],
+    bookmarkTimelineInjectEvery: localBookmarkSettings.every,
+    bookmarkTimelineSeenTweetIds,
+    showBookmarkCount: raw?.showBookmarkCount !== false,
+    leaderboardEdgeHideEnabled: raw?.leaderboardEdgeHideEnabled !== false,
+    leaderboardCount: normalizeLeaderboardCount(raw?.leaderboardCount),
+    leaderboardColumns: normalizeLeaderboardColumns(raw?.leaderboardColumns),
+    badgeStyle: raw?.badgeStyle === 'inline-classic' ? 'inline-classic' : 'pill-solid',
+    language: normalizeLanguage(raw?.language),
+    effectiveLanguage: getEffectiveLanguageId(raw?.language),
+    messages: await getLocalizedMessages(raw?.language),
+  }, '*');
+}
+
+function pushFolders(folders, cachedAt) {
+  window.postMessage({
+    type: 'XVM_FOLDERS_UPDATE',
+    folders: Array.isArray(folders) ? folders : [],
+    cachedAt: cachedAt || 0,
+  }, '*');
+}
+
+function buildBookmarkFolderTimelineUrl(folderId, cursor = '') {
+  const variables = {
+    bookmark_collection_id: folderId,
+    count: 100,
+    cursor: cursor || '',
+    includePromotedContent: false,
+  };
+  return `/i/api/graphql/${bookmarkFolderTimelineQid}/${OP_BOOKMARK_FOLDER_TIMELINE.name}?${new URLSearchParams({
+    variables: JSON.stringify(variables),
+    features: JSON.stringify(buildBookmarkTimelineFeatures()),
+    fieldToggles: JSON.stringify(BOOKMARK_TIMELINE_FIELD_TOGGLES),
+  }).toString()}`;
+}
+
+function buildBookmarkTimelineFeatures() {
+  const keys = bookmarkTimelineFeatureKeys?.length ? bookmarkTimelineFeatureKeys : Object.keys(BOOKMARK_TIMELINE_FEATURES);
+  const out = {};
+  for (const key of keys) out[key] = Object.prototype.hasOwnProperty.call(BOOKMARK_TIMELINE_FEATURES, key) ? BOOKMARK_TIMELINE_FEATURES[key] : true;
+  return out;
+}
+
+function getBookmarkTimelineClientUuid() {
+  const key = 'xvm_bookmark_timeline_client_uuid';
+  try {
+    const existing = localStorage.getItem(key);
+    if (existing) return existing;
+    const uuid = crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    localStorage.setItem(key, uuid);
+    return uuid;
+  } catch (_) {
+    return crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+}
+
+function sliceBalancedObject(text, openIdx) {
+  let depth = 0;
+  let inStr = null;
+  for (let i = openIdx; i < text.length; i++) {
+    const ch = text[i];
+    if (inStr) {
+      if (ch === '\\') { i++; continue; }
+      if (ch === inStr) inStr = null;
+    } else if (ch === '"' || ch === "'" || ch === '`') {
+      inStr = ch;
+    } else if (ch === '{') {
+      depth++;
+    } else if (ch === '}') {
+      depth--;
+      if (depth === 0) return text.slice(openIdx, i + 1);
+    }
+  }
+  return '';
+}
+
+function extractQuotedStrings(listBody) {
+  return (listBody.match(/"[^"]+"/g) || []).map((s) => s.slice(1, -1));
+}
+
+function parseBookmarkFolderTimelineOperation(bundleText) {
+  const loose = bundleText.match(/queryId:"([A-Za-z0-9_-]{15,30})"[^{}]{0,800}operationName:"BookmarkFolderTimeline"/)
+    || bundleText.match(/operationName:"BookmarkFolderTimeline"[^{}]{0,800}queryId:"([A-Za-z0-9_-]{15,30})"/);
+  if (loose?.[1]) return { queryId: loose[1], featureSwitches: [] };
+  const split = /e\.exports\s*=\s*\{/g;
+  let match;
+  while ((match = split.exec(bundleText))) {
+    const body = sliceBalancedObject(bundleText, match.index + match[0].length - 1);
+    if (!body || !/operationName:"BookmarkFolderTimeline"/.test(body)) continue;
+    const qid = body.match(/queryId:"([A-Za-z0-9_-]{15,30})"/)?.[1];
+    if (qid) {
+      const featureBody = body.match(/featureSwitches:\[([^\]]*)\]/)?.[1] || '';
+      return { queryId: qid, featureSwitches: extractQuotedStrings(featureBody) };
+    }
+  }
+  return null;
+}
+
+function parseBookmarkFolderTimelineQueryId(bundleText) {
+  return parseBookmarkFolderTimelineOperation(bundleText)?.queryId || null;
+}
+
+async function discoverBookmarkFolderTimelineQueryId() {
+  const scriptUrls = [
+    ...Array.from(document.scripts || []).map((script) => script.src),
+    ...performance.getEntriesByType('resource').map((entry) => entry.name),
+  ].filter((src) => /abs\.twimg\.com\/responsive-web\/client-web\/.*\.js/.test(src));
+  try {
+    const home = await fetch('https://x.com/home', { credentials: 'omit' });
+    const html = await home.text();
+    const main = html.match(X_MAIN_BUNDLE_RE)?.[0];
+    if (main) scriptUrls.unshift(main);
+  } catch (err) {
+    console.warn('[XVM] BookmarkFolderTimeline discovery home fetch failed', err);
+  }
+  const urls = [...new Set(scriptUrls)];
+  console.warn('[XVM] BookmarkFolderTimeline discovery scanning scripts', urls.length);
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { credentials: 'omit' });
+      if (!res.ok) {
+        console.warn('[XVM] BookmarkFolderTimeline discovery script HTTP', res.status, url);
+        continue;
+      }
+      const op = parseBookmarkFolderTimelineOperation(await res.text());
+      if (op?.queryId) {
+        bookmarkFolderTimelineQid = op.queryId;
+        bookmarkTimelineFeatureKeys = op.featureSwitches?.length ? op.featureSwitches : null;
+        console.warn('[XVM] BookmarkFolderTimeline discovery found queryId', op.queryId, url);
+        return op.queryId;
+      }
+    } catch (err) {
+      console.warn('[XVM] BookmarkFolderTimeline discovery script failed', url, err);
+    }
+  }
+  console.warn('[XVM] BookmarkFolderTimeline discovery found no queryId');
+  return null;
+}
+
+// Walk one BookmarkFolderTimeline page: count the tweet entries and pull the
+// bottom/show-more cursor so we can page through the whole folder. Mirrors the
+// envelope variants X uses (bookmark_collection_timeline / bookmark_timeline_v2 /
+// bookmark_timeline).
+function extractBookmarkTimelinePage(json) {
+  const timeline = json?.data?.bookmark_collection_timeline?.timeline
+    || json?.data?.bookmark_timeline_v2?.timeline
+    || json?.data?.bookmark_timeline?.timeline;
+  const valid = !!timeline && Array.isArray(timeline.instructions);
+  const instructions = Array.isArray(timeline?.instructions) ? timeline.instructions : [];
+  let tweetCount = 0;
+  let nextCursor = null;
+  for (const inst of instructions) {
+    for (const entry of inst?.entries || []) {
+      const content = entry?.content;
+      const type = content?.entryType || content?.__typename;
+      if (type === 'TimelineTimelineCursor') {
+        if (content.cursorType === 'Bottom' || content.cursorType === 'ShowMore') nextCursor = content.value;
+        continue;
+      }
+      if (typeof entry?.entryId === 'string' && (entry.entryId.startsWith('cursor-bottom-') || entry.entryId.startsWith('cursor-showMore-'))) {
+        nextCursor = content?.value || content?.itemContent?.value || nextCursor;
+        continue;
+      }
+      if (content?.itemContent?.tweet_results?.result) { tweetCount += 1; continue; }
+      for (const item of content?.items || []) {
+        if (item?.item?.itemContent?.tweet_results?.result) tweetCount += 1;
+      }
+    }
+  }
+  return { valid, tweetCount, nextCursor };
+}
+
+async function fetchBookmarkTimelineFolderJson(id, cursor = '') {
+  const ct0 = document.cookie.match(/ct0=([^;]+)/)?.[1];
+  if (!ct0) throw new Error('missing ct0');
+  const url = buildBookmarkFolderTimelineUrl(id, cursor);
+  const path = new URL(url, location.origin).pathname;
+  const txId = await requestBookmarkTimelineTxId(path);
+  const headers = {
+    authorization: X_BEARER,
+    'x-csrf-token': ct0,
+    'x-twitter-auth-type': 'OAuth2Session',
+    'x-twitter-active-user': 'true',
+    'x-twitter-client-language': 'en',
+    'x-client-uuid': getBookmarkTimelineClientUuid(),
+    'content-type': 'application/json',
+  };
+  if (txId) headers['x-client-transaction-id'] = txId;
+  const res = await fetch(url, {
+    credentials: 'include',
+    headers,
+  });
+  const json = await res.json().catch(() => null);
+  return { res, json };
+}
+
+async function refreshBookmarkTimelineFolder(folderId, retryWithFreshQueryId = true) {
+  const id = String(folderId || '').trim();
+  if (!id) return;
+  window.postMessage({ type: 'XVM_BOOKMARK_TIMELINE_CACHE_START', folderId: id }, '*');
+
+  const pages = [];
+  let cursor = '';
+  let total = 0;
+  let triedFreshQid = false;
+  for (let i = 0; i < BOOKMARK_TIMELINE_MAX_PAGES && total < BOOKMARK_TIMELINE_MAX_ENTRIES_PER_FOLDER; i++) {
+    let { res, json } = await fetchBookmarkTimelineFolderJson(id, cursor);
+    if (res.status === 404 && retryWithFreshQueryId && !triedFreshQid) {
+      triedFreshQid = true;
+      console.warn('[XVM] BookmarkFolderTimeline 404, discovering fresh queryId');
+      const qid = await discoverBookmarkFolderTimelineQueryId();
+      if (qid) {
+        ({ res, json } = await fetchBookmarkTimelineFolderJson(id, cursor));
+        console.warn('[XVM] BookmarkFolderTimeline retryWithFreshQueryId status', res.status, qid);
+      }
+    }
+    if (!res.ok) throw new Error(`BookmarkFolderTimeline HTTP ${res.status}`);
+    if (!json || typeof json !== 'object' || Array.isArray(json) || json.errors?.length) {
+      throw new Error('BookmarkFolderTimeline invalid response');
+    }
+    const { valid, tweetCount, nextCursor } = extractBookmarkTimelinePage(json);
+    if (!valid) throw new Error('BookmarkFolderTimeline invalid timeline');
+    pages.push(json);
+    total += tweetCount;
+    // Stop when the folder is exhausted (no cursor / repeated cursor / empty page).
+    if (!nextCursor || nextCursor === cursor || tweetCount === 0) break;
+    cursor = nextCursor;
+  }
+
+  // Post every page at once; findEntryArrays recurses into { pages: [...] } and
+  // cacheBookmarkTimelineEntries dedupes across all of them in one replace.
+  const refreshedAt = Date.now();
+  const entries = globalThis.__xvmBookmarkTimelineStorage?.extractEntries?.({ pages }) || [];
+  await persistBookmarkTimelineFolder(id, entries, refreshedAt);
+  window.postMessage({
+    type: 'XVM_BOOKMARK_TIMELINE_CACHE_UPDATE',
+    folderId: id,
+    json: { pages },
+    refreshedAt,
+  }, '*');
+}
+
+async function refreshBookmarkTimelineFolders(folderIds, background = false) {
+  const ids = globalThis.__xvmBookmarkTimelineStorage?.sanitizeFolderIds?.(folderIds) || [];
+  for (const id of ids) {
+    try {
+      await refreshBookmarkTimelineFolder(id);
+    } catch (err) {
+      console[background ? 'debug' : 'warn']('[XVM] BookmarkFolderTimeline refresh failed', id, err);
+      window.postMessage({
+        type: 'XVM_BOOKMARK_TIMELINE_CACHE_ERROR',
+        folderId: id,
+        error: err?.message || String(err),
+        background,
+      }, '*');
+    }
+  }
+}
+
+function hydrateBookmarkTimelineCacheToPage(cache) {
+  const folders = cache && typeof cache === 'object' ? cache : {};
+  const payload = {};
+  for (const [folderId, record] of Object.entries(folders)) {
+    if (Array.isArray(record?.entries) && record.entries.length) {
+      payload[folderId] = { entries: record.entries, refreshedAt: record.refreshedAt || 0 };
+    }
+  }
+  if (Object.keys(payload).length) {
+    window.postMessage({ type: 'XVM_BOOKMARK_TIMELINE_CACHE_HYDRATE', folders: payload }, '*');
+  }
+}
+
+function currentBookmarkTimelineAccountId() {
+  return globalThis.__xvmBookmarkTimelineStorage?.accountIdFromCookie?.(document.cookie) || '';
+}
+
+// --- article-template-migration:start ---
+// Until 1.18.12 long posts had their own template list (grokArticlePromptTemplates).
+// 1.18.13 folds it into the one list. Templates the user wrote or edited are
+// carried over; the six that shipped unmodified are dropped, since the new
+// defaults cover them. Pure, so the test can run it without chrome.*.
+const LEGACY_BUNDLED_ARTICLE_PROMPTS = new Set([
+  '以下是一篇 X 长文 / Article：\n\n[推文内容]\n\n为这篇长文生成10条评论。要求：每条评论引用文章中具体的观点或论据进行回应（赞同/质疑/补充），避免笼统的"很有启发"这类空话；语气自然像真人；每条评论只包含可直接发布的评论正文，用代码块包裹。',
+  '以下是一篇长文：\n\n[推文内容]\n\n挑选这篇长文中最值得讨论的3-5个核心论点，针对每个论点给出1-2条有信息密度的评论（提出延伸思考、反例、或个人经验），每条评论只包含可直接发布的评论正文，用代码块包裹。',
+  'Here is an X long-form post / Article:\n\n[推文内容]\n\nWrite 10 English replies. Requirements:\n- Each reply should respond to a specific claim, argument, example, or conclusion from the article\n- Mix agreement, critique, added context, and follow-up questions\n- Avoid vague praise like “great insights”\n- Keep each reply specific and ready to post\n- Output only the reply text, each inside its own code block.',
+  'Here is an X long-form post / Article:\n\n[推文内容]\n\nIdentify 3-5 discussion-worthy points from the article and write 10 English replies. Requirements:\n- Each reply should focus on one concrete point\n- Add a useful extension, counterexample, practical constraint, or personal-experience angle\n- Sound natural, not like an essay summary\n- Output only ready-to-post reply text, each inside its own code block.',
+  '以下は X の長文投稿 / Article です：\n\n[推文内容]\n\n日本語の返信を 10 件作成してください。条件：\n- 各返信は本文中の具体的な主張、根拠、例、結論のどれかに反応する\n- 賛同、疑問、補足、追加の問いをバランスよく混ぜる\n- 「勉強になりました」のような抽象的な感想だけにしない\n- 1 件あたり 30〜80 字程度\n- そのまま投稿できる本文だけを、各返信ごとにコードブロックで出力する。',
+  '以下は X の長文投稿 / Article です：\n\n[推文内容]\n\n本文から議論すべきポイントを 3〜5 個選び、日本語の返信を 10 件作成してください。条件：\n- 各返信は 1 つの具体的な論点に絞る\n- 追加視点、反例、現実的な制約、個人的な経験の角度を入れる\n- 論文要約のようにせず、自然な返信文にする\n- そのまま投稿できる本文だけを、各返信ごとにコードブロックで出力する。',
+]);
+
+function mergeLegacyArticleTemplates(promptTemplates, articleTemplates, defaultTemplates) {
+  const legacy = Array.isArray(articleTemplates) ? articleTemplates : [];
+  const custom = legacy.filter((tpl) => {
+    const prompt = String(tpl?.prompt || '').trim();
+    return prompt && !LEGACY_BUNDLED_ARTICLE_PROMPTS.has(prompt);
+  });
+  if (!custom.length) return null;
+  const base = Array.isArray(promptTemplates) && promptTemplates.length
+    ? promptTemplates.map((tpl) => ({ ...tpl }))
+    : defaultTemplates.map((tpl) => ({ ...tpl }));
+  const ids = new Set(base.map((tpl) => String(tpl.id)));
+  const prompts = new Set(base.map((tpl) => String(tpl.prompt || '').trim()));
+  for (const tpl of custom) {
+    const prompt = String(tpl.prompt).trim();
+    if (prompts.has(prompt)) continue;
+    let id = String(tpl.id || 'article');
+    while (ids.has(id)) id = `${id}-legacy`;
+    ids.add(id);
+    prompts.add(prompt);
+    base.push({ id, name: String(tpl.name || id), prompt });
+  }
+  return base;
+}
+// --- article-template-migration:end ---
+
+function migrateLegacyArticleTemplates(callback) {
+  chrome.storage.sync.get(['grokArticlePromptTemplates', 'grokPromptTemplates'], (items) => {
+    if (!('grokArticlePromptTemplates' in items)) { callback?.(); return; }
+    const merged = mergeLegacyArticleTemplates(
+      items.grokPromptTemplates,
+      items.grokArticlePromptTemplates,
+      DEFAULT_FEATURES.grokPromptTemplates,
+    );
+    const drop = () => chrome.storage.sync.remove(['grokArticlePromptTemplates', 'grokSelectedArticlePromptId'], () => callback?.());
+    if (merged) chrome.storage.sync.set({ grokPromptTemplates: merged }, drop);
+    else drop();
+  });
+}
+
+const V2_TEMPLATES_MIGRATED_KEY = 'xvm_prompt_templates_v2_migrated';
+function migratePromptTemplatesToV2(callback) {
+  chrome.storage.local.get({ [V2_TEMPLATES_MIGRATED_KEY]: false }, (localItems) => {
+    if (localItems[V2_TEMPLATES_MIGRATED_KEY]) { callback?.(); return; }
+    chrome.storage.sync.get(['grokPromptTemplates', 'language'], (syncItems) => {
+      const existing = syncItems.grokPromptTemplates;
+      const isOldSet = !Array.isArray(existing) || existing.length === 0 || (
+        existing.length <= 6 && existing.some((t) => t.name === 'Natural replies' || t.name === '默认评论')
+      );
+      if (isOldSet) {
+        const targetLocale = syncItems.language === 'auto' || !syncItems.language ? getBrowserLocaleId() : syncItems.language;
+        const newDefs = getLocalizedGrokDefaults(targetLocale);
+        chrome.storage.sync.set({
+          grokPromptTemplates: newDefs.grokPromptTemplates,
+          grokCommentPrompt: newDefs.grokCommentPrompt,
+          grokSelectedPromptId: newDefs.grokSelectedPromptId,
+        }, () => {
+          chrome.storage.local.set({ [V2_TEMPLATES_MIGRATED_KEY]: true }, callback);
+        });
+      } else {
+        chrome.storage.local.set({ [V2_TEMPLATES_MIGRATED_KEY]: true }, callback);
+      }
+    });
+  });
+}
+
+function removeLegacySyncedBookmarkTimelineSettings(callback) {
+  chrome.storage.local.get({ [BOOKMARK_TIMELINE_SYNC_MIGRATED_KEY]: false }, (items) => {
+    if (items[BOOKMARK_TIMELINE_SYNC_MIGRATED_KEY]) { callback?.(); return; }
+    chrome.storage.sync.remove([
+      'featureBookmarkTimelineInject',
+      'bookmarkTimelineInjectFolderIds',
+      'bookmarkTimelineInjectEvery',
+    ], () => {
+      chrome.storage.local.set({ [BOOKMARK_TIMELINE_SYNC_MIGRATED_KEY]: true }, callback);
+    });
+  });
+}
+
+function readBookmarkTimelineSettings() {
+  return new Promise((resolve) => {
+    const accountId = currentBookmarkTimelineAccountId();
+    chrome.storage.local.get({ [BOOKMARK_TIMELINE_SETTINGS_KEY]: null }, (items) => {
+      const record = items[BOOKMARK_TIMELINE_SETTINGS_KEY];
+      const valid = accountId && record?.accountId === accountId;
+      resolve({
+        accountId,
+        enabled: valid && record.enabled === true,
+        folderIds: valid
+          ? (globalThis.__xvmBookmarkTimelineStorage?.sanitizeFolderIds?.(record.folderIds) || [])
+          : [],
+        every: valid ? Math.max(5, Math.min(100, Number.parseInt(record.every, 10) || 20)) : 20,
+      });
+    });
+  });
+}
+
+function readBookmarkTimelineSeenTweetIds(accountId = currentBookmarkTimelineAccountId()) {
+  return new Promise((resolve) => {
+    chrome.storage.local.get({ [BOOKMARK_TIMELINE_SEEN_KEY]: null }, (items) => {
+      const record = items[BOOKMARK_TIMELINE_SEEN_KEY];
+      resolve(record?.accountId === accountId
+        ? (globalThis.__xvmBookmarkTimelineStorage?.sanitizeTweetIds?.(record.ids) || [])
+        : []);
+    });
+  });
+}
+
+function clearBookmarkTimelineCache(callback) {
+  window.postMessage({ type: 'XVM_BOOKMARK_TIMELINE_CACHE_RESET' }, '*');
+  chrome.storage.local.remove([
+    BOOKMARK_TIMELINE_CACHE_KEY,
+    BOOKMARK_TIMELINE_AUTO_ATTEMPT_KEY,
+    BOOKMARK_TIMELINE_MANUAL_ATTEMPT_KEY,
+  ], callback);
+}
+
+function clearBookmarkTimelineStorage(callback) {
+  clearBookmarkTimelineCache(() => {
+    chrome.storage.local.remove([BOOKMARK_TIMELINE_SETTINGS_KEY, BOOKMARK_TIMELINE_SEEN_KEY], callback);
+  });
+}
+
+function withBookmarkTimelineScope(callback) {
+  const accountId = currentBookmarkTimelineAccountId();
+  if (!accountId) { callback(null); return; }
+  chrome.storage.local.get({ [BOOKMARK_TIMELINE_SETTINGS_KEY]: null }, (items) => {
+    const settings = items[BOOKMARK_TIMELINE_SETTINGS_KEY];
+    const folderIds = globalThis.__xvmBookmarkTimelineStorage?.sanitizeFolderIds?.(settings?.folderIds) || [];
+    if (settings?.enabled !== true || !folderIds.length) {
+      clearBookmarkTimelineCache(() => callback(null));
+      return;
+    }
+    const decision = globalThis.__xvmBookmarkTimelineStorage?.resolveScope?.(
+      accountId,
+      settings.accountId,
+      settings.enabled === true,
+      folderIds,
+    );
+    if (decision?.action === 'reset') {
+      clearBookmarkTimelineStorage(() => callback(null));
+      return;
+    }
+    callback(decision?.scope || null);
+  });
+}
+
+function runBookmarkTimelineStorageTask(task) {
+  if (navigator.locks?.request) return navigator.locks.request(BOOKMARK_TIMELINE_STORAGE_LOCK, task);
+  return task();
+}
+
+function pruneBookmarkTimelineCache(scope, callback) {
+  return runBookmarkTimelineStorageTask(() => new Promise((resolve) => {
+    chrome.storage.local.get({ [BOOKMARK_TIMELINE_CACHE_KEY]: {} }, (items) => {
+      const cache = globalThis.__xvmBookmarkTimelineStorage?.normalizeCacheDocument?.(
+        items[BOOKMARK_TIMELINE_CACHE_KEY],
+        scope.accountId,
+        scope.folderIds,
+      ) || { accountId: scope.accountId, folders: {} };
+      chrome.storage.local.set({ [BOOKMARK_TIMELINE_CACHE_KEY]: cache }, () => {
+        callback?.(cache.folders);
+        resolve(cache.folders);
+      });
+    });
+  }));
+}
+
+function hydrateConfiguredBookmarkTimelineCache() {
+  safeChromeCall(() => withBookmarkTimelineScope((scope) => {
+    if (!scope) return;
+    pruneBookmarkTimelineCache(scope, hydrateBookmarkTimelineCacheToPage);
+  }));
+}
+
+function persistBookmarkTimelineFolder(folderId, entries, refreshedAt) {
+  const id = String(folderId || '').trim();
+  if (!id || !Array.isArray(entries)) return Promise.resolve();
+  return runBookmarkTimelineStorageTask(() => new Promise((resolve) => {
+    safeChromeCall(() => withBookmarkTimelineScope((scope) => {
+      if (!scope || !scope.folderIds.includes(id)) { resolve(); return; }
+      chrome.storage.local.get({
+        [BOOKMARK_TIMELINE_CACHE_KEY]: {},
+        [BOOKMARK_TIMELINE_SEEN_KEY]: null,
+      }, (items) => {
+        const seen = new Set(items[BOOKMARK_TIMELINE_SEEN_KEY]?.accountId === scope.accountId
+          ? (globalThis.__xvmBookmarkTimelineStorage?.sanitizeTweetIds?.(items[BOOKMARK_TIMELINE_SEEN_KEY].ids) || [])
+          : []);
+        const sanitized = (globalThis.__xvmBookmarkTimelineStorage?.sanitizeEntries?.(entries) || [])
+          .filter((entry) => !seen.has(String(globalThis.__xvmBookmarkTimelineStorage?.getTweetId?.(entry) || '')));
+        const current = globalThis.__xvmBookmarkTimelineStorage?.normalizeCacheDocument?.(
+          items[BOOKMARK_TIMELINE_CACHE_KEY],
+          scope.accountId,
+          scope.folderIds,
+        ) || { accountId: scope.accountId, folders: {} };
+        const cache = globalThis.__xvmBookmarkTimelineStorage?.normalizeCacheDocument?.({
+          accountId: scope.accountId,
+          folders: {
+            ...current.folders,
+            [id]: { entries: sanitized, refreshedAt: Number(refreshedAt) || Date.now() },
+          },
+        }, scope.accountId, scope.folderIds) || { accountId: scope.accountId, folders: {} };
+        chrome.storage.local.set({ [BOOKMARK_TIMELINE_CACHE_KEY]: cache }, () => {
+          if (chrome.runtime?.lastError) {
+            console.warn('[XVM] persist bookmark timeline cache failed', chrome.runtime.lastError.message);
+          }
+          resolve();
+        });
+      });
+    }));
+  }));
+}
+
+// Background refresh of every selected folder that is missing or stale. Runs on
+// page load, on a timer, and whenever the selection changes — so the user never
+// has to open a folder manually to prime its cache.
+function autoRefreshBookmarkTimeline(force = false) {
+  const run = () => new Promise((resolve) => safeChromeCall(() => {
+    withBookmarkTimelineScope((scope) => {
+      if (!scope) { resolve(); return; }
+      pruneBookmarkTimelineCache(scope, () => chrome.storage.local.get({
+        [BOOKMARK_TIMELINE_CACHE_KEY]: {},
+        [BOOKMARK_TIMELINE_AUTO_ATTEMPT_KEY]: {},
+      }, (items) => {
+        const cache = globalThis.__xvmBookmarkTimelineStorage?.normalizeCacheDocument?.(
+          items[BOOKMARK_TIMELINE_CACHE_KEY],
+          scope.accountId,
+          scope.folderIds,
+        ) || { accountId: scope.accountId, folders: {} };
+        const rawAttempts = items[BOOKMARK_TIMELINE_AUTO_ATTEMPT_KEY];
+        const attempts = rawAttempts?.accountId === scope.accountId && rawAttempts?.folders
+          ? rawAttempts.folders
+          : {};
+        const now = Date.now();
+        const stale = scope.folderIds.filter((id) => force || now - Math.max(
+          Number(cache.folders?.[id]?.refreshedAt) || 0,
+          Number(attempts[id]) || 0,
+        ) > BOOKMARK_TIMELINE_AUTO_TTL_MS);
+        if (!stale.length) { resolve(); return; }
+        const nextAttempts = { ...attempts };
+        for (const id of stale) nextAttempts[id] = now;
+        chrome.storage.local.set({
+          [BOOKMARK_TIMELINE_AUTO_ATTEMPT_KEY]: { accountId: scope.accountId, folders: nextAttempts },
+        }, () => {
+          refreshBookmarkTimelineFolders(stale, true).finally(resolve);
+        });
+      }));
+    });
+  }));
+  if (navigator.locks?.request) {
+    return navigator.locks.request(BOOKMARK_TIMELINE_AUTO_LOCK, { ifAvailable: true },
+      (lock) => lock ? run() : undefined);
+  }
+  return run();
+}
+
+function ensureBookmarkTimelineAutoTimer() {
+  if (bookmarkTimelineAutoTimer) return;
+  bookmarkTimelineAutoTimer = setInterval(() => autoRefreshBookmarkTimeline(false), BOOKMARK_TIMELINE_AUTO_TTL_MS);
+}
+
+function pushReleaseNotesIfNeeded() {
+  safeChromeCall(() => {
+    const version = chrome.runtime?.getManifest?.()?.version || '';
+    if (!version) return;
+    if (!RELEASE_NOTES_AUTO_VERSIONS.has(version)) return;
+    chrome.storage.local.get({ [RELEASE_NOTES_SEEN_KEY]: null }, (items) => {
+      if (items?.[RELEASE_NOTES_SEEN_KEY] === version) return;
+      window.postMessage({ type: 'XVM_RELEASE_NOTES_SHOW', version }, '*');
+    });
+  });
+}
+
+// Guard all chrome.* calls against extension context invalidation
+// (happens when extension is reloaded while page is still open)
+function safeChromeCall(fn) {
+  try {
+    if (chrome?.runtime?.id) fn();
+  } catch (e) {}
+}
+
+safeChromeCall(() => {
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message?.type === 'XVM_GROK_CHECK') {
+      const requestId = `grok-check-${crypto.randomUUID()}`;
+      const finish = (result) => {
+        clearTimeout(timer);
+        window.removeEventListener('message', onResult);
+        sendResponse(result);
+      };
+      const onResult = (event) => {
+        if (event.source !== window || event.data?.type !== 'XVM_GROK_CHECK_RESULT'
+          || event.data.requestId !== requestId) return;
+        const result = event.data.result;
+        // Never forward arbitrary page payloads or transaction IDs to the popup.
+        finish(result?.ok === true
+          ? { ok: true, message: '已检测到 X 会话标记并生成签名（未验证生成接口）' }
+          : { ok: false, error: String(result?.error || 'Grok 就绪检查失败') });
+      };
+      const timer = setTimeout(() => finish({ ok: false, error: 'Grok 就绪检查超时，请刷新 X 后重试。' }), 20000);
+      window.addEventListener('message', onResult);
+      window.postMessage({ type: 'XVM_GROK_CHECK_REQUEST', requestId }, '*');
+      return true;
+    }
+    if (message?.type === 'XVM_RELEASE_NOTES_SHOW_MANUAL') {
+      const version = typeof message.version === 'string' && message.version
+        ? message.version
+        : (chrome.runtime?.getManifest?.()?.version || '');
+      if (version) window.postMessage({ type: 'XVM_RELEASE_NOTES_SHOW', version }, '*');
+      return false;
+    }
+    if (message?.type !== 'XVM_AI_GENERATE_PROGRESS') return false;
+    window.postMessage({
+      type: 'XVM_AI_GENERATE_PROGRESS',
+      requestId: message.requestId,
+      comments: Array.isArray(message.comments) ? message.comments : [],
+    }, '*');
+    return false;
+  });
+});
+
+safeChromeCall(() => {
+  removeLegacySyncedBookmarkTimelineSettings(() => {
+    migrateLegacyArticleTemplates(() => {
+      migratePromptTemplatesToV2(() => {
+        chrome.storage.sync.get(STORAGE_DEFAULTS, (items) => {
+          pushSettings(items);
+        });
+      });
+    });
+  });
+});
+
+safeChromeCall(() => {
+  chrome.storage.local.get({ bookmarkFoldersCache: null }, (items) => {
+    const cache = items.bookmarkFoldersCache;
+    if (cache?.folders) pushFolders(cache.folders, cache.cachedAt || 0);
+  });
+});
+
+pushReleaseNotesIfNeeded();
+
+safeChromeCall(() => {
+  chrome.storage.local.get({ [BOOKMARK_TIMELINE_QID_CACHE_KEY]: null }, (items) => {
+    applyBookmarkTimelineQueryId(items[BOOKMARK_TIMELINE_QID_CACHE_KEY]?.qid);
+  });
+});
+
+window.addEventListener('message', (event) => {
+  if (event.source !== window) return;
+  const type = event.data?.type;
+
+  if (type === 'XVM_REQUEST_SETTINGS') {
+    safeChromeCall(() => {
+      chrome.storage.sync.get(STORAGE_DEFAULTS, (items) => {
+        pushSettings(items);
+      });
+    });
+    safeChromeCall(() => {
+      chrome.storage.local.get({ bookmarkFoldersCache: null }, (items) => {
+        const cache = items.bookmarkFoldersCache;
+        if (cache?.folders) pushFolders(cache.folders, cache.cachedAt || 0);
+      });
+    });
+    hydrateConfiguredBookmarkTimelineCache();
+    return;
+  }
+
+  if (type === 'XVM_RELEASE_NOTES_DISMISS' && typeof event.data.version === 'string') {
+    safeChromeCall(() => {
+      chrome.storage.local.set({ [RELEASE_NOTES_SEEN_KEY]: event.data.version });
+    });
+    return;
+  }
+
+  if (type === 'XVM_REQUEST_FOLDER_REFRESH') {
+    refreshFolders();
+    return;
+  }
+
+  if (type === 'XVM_BOOKMARK_TIMELINE_REFRESH') {
+    safeChromeCall(() => withBookmarkTimelineScope((scope) => {
+      if (!scope) return;
+      const requested = globalThis.__xvmBookmarkTimelineStorage?.sanitizeFolderIds?.(event.data.folderIds) || [];
+      const selected = requested.filter((id) => scope.folderIds.includes(id));
+      if (!selected.length) return;
+      const run = () => new Promise((resolve) => {
+        chrome.storage.local.get({ [BOOKMARK_TIMELINE_MANUAL_ATTEMPT_KEY]: null }, (items) => {
+          const attempt = items[BOOKMARK_TIMELINE_MANUAL_ATTEMPT_KEY];
+          const now = Date.now();
+          if (attempt?.accountId === scope.accountId && now - Number(attempt.at || 0) < BOOKMARK_TIMELINE_MANUAL_TTL_MS) {
+            resolve();
+            return;
+          }
+          chrome.storage.local.set({
+            [BOOKMARK_TIMELINE_MANUAL_ATTEMPT_KEY]: { accountId: scope.accountId, at: now },
+          }, () => refreshBookmarkTimelineFolders(selected).finally(resolve));
+        });
+      });
+      if (navigator.locks?.request) {
+        navigator.locks.request(BOOKMARK_TIMELINE_MANUAL_LOCK, { ifAvailable: true },
+          (lock) => lock ? run() : undefined);
+      } else {
+        run();
+      }
+    }));
+    return;
+  }
+
+  if (type === 'XVM_BOOKMARK_TIMELINE_QID_CAPTURED') {
+    if (!applyBookmarkTimelineQueryId(event.data.qid)) return;
+    safeChromeCall(() => {
+      chrome.storage.local.set({
+        [BOOKMARK_TIMELINE_QID_CACHE_KEY]: {
+          qid: bookmarkFolderTimelineQid,
+          capturedAt: Number(event.data.capturedAt) || Date.now(),
+        },
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_BOOKMARK_TIMELINE_INJECT_SAVE') {
+    const patch = {
+      featureBookmarkTimelineInject: event.data.enabled === true,
+      bookmarkTimelineInjectFolderIds: globalThis.__xvmBookmarkTimelineStorage?.sanitizeFolderIds?.(
+        event.data.folderIds,
+      ) || [],
+      bookmarkTimelineInjectEvery: Math.max(5, Math.min(100, Number.parseInt(event.data.every, 10) || 20)),
+    };
+    safeChromeCall(() => {
+      const accountId = currentBookmarkTimelineAccountId();
+      const persistSettings = () => {
+        chrome.storage.sync.remove([
+          'featureBookmarkTimelineInject',
+          'bookmarkTimelineInjectFolderIds',
+          'bookmarkTimelineInjectEvery',
+        ], () => {
+          chrome.storage.sync.get(STORAGE_DEFAULTS, (items) => {
+            pushSettings(items);
+          });
+        });
+      };
+      if (accountId) {
+        chrome.storage.local.set({
+          [BOOKMARK_TIMELINE_SETTINGS_KEY]: {
+            accountId,
+            enabled: patch.featureBookmarkTimelineInject,
+            folderIds: patch.bookmarkTimelineInjectFolderIds,
+            every: patch.bookmarkTimelineInjectEvery,
+          },
+        }, () => {
+          pruneBookmarkTimelineCache({
+            accountId,
+            folderIds: patch.bookmarkTimelineInjectFolderIds,
+          }, persistSettings);
+        });
+      } else {
+        clearBookmarkTimelineStorage(persistSettings);
+      }
+    });
+    return;
+  }
+
+  if (type === 'XVM_BOOKMARK_TIMELINE_SEEN') {
+    safeChromeCall(() => {
+      const accountId = currentBookmarkTimelineAccountId();
+      if (!accountId) return;
+      const ids = globalThis.__xvmBookmarkTimelineStorage?.sanitizeTweetIds?.(event.data.tweetIds) || [];
+      if (!ids.length) return;
+      chrome.storage.local.get({ [BOOKMARK_TIMELINE_SEEN_KEY]: null }, (items) => {
+        const record = globalThis.__xvmBookmarkTimelineStorage?.mergeSeenTweetIds?.(
+          items[BOOKMARK_TIMELINE_SEEN_KEY],
+          accountId,
+          ids,
+        ) || { accountId, ids };
+        chrome.storage.local.set({ [BOOKMARK_TIMELINE_SEEN_KEY]: record });
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_BOOKMARK_FOLDER_MUTATION' && event.data.folderId) {
+    const mutation = {
+      folderId: String(event.data.folderId),
+      tweetId: String(event.data.tweetId || ''),
+      action: String(event.data.action || ''),
+      at: Date.now(),
+    };
+    window.postMessage({ type: 'XVM_BOOKMARK_FOLDER_DIRTY', ...mutation }, '*');
+    safeChromeCall(() => {
+      chrome.storage.local.set({ bookmarkFolderMutation: mutation });
+    });
+    return;
+  }
+
+  // v1.7.0 #2 — leaderboard theme sync. MAIN-world content.js asks for
+  // the current theme preference; we mirror chrome.storage.sync.theme
+  // back as XVM_THEME_UPDATE { pref }. content.js resolves 'system' via
+  // matchMedia on its own side.
+  if (type === 'XVM_THEME_REQUEST') {
+    safeChromeCall(() => {
+      chrome.storage.sync.get({ theme: 'system' }, (items) => {
+        window.postMessage({ type: 'XVM_THEME_UPDATE', pref: items.theme || 'system' }, '*');
+      });
+    });
+    return;
+  }
+
+  // Leaderboard hot toggle: one global switch. Scope flags are configured
+  // separately in the floating settings panel and preserved here.
+  if (type === 'XVM_RATE_FILTER_SET_ENABLED'
+      && typeof event.data.enabled === 'boolean') {
+    safeChromeCall(() => {
+      const RF_KEY = 'xvm_rate_filter_v1';
+      chrome.storage.local.get({ [RF_KEY]: null }, (items) => {
+        const cur = items[RF_KEY] && typeof items[RF_KEY] === 'object' ? items[RF_KEY] : {};
+        const next = { ...cur, enabled: event.data.enabled, __scopeMigratedV2: true };
+        chrome.storage.local.set({ [RF_KEY]: next }, () => {
+          window.postMessage({ type: 'XVM_RATE_SETTINGS_UPDATE', settings: next }, '*');
+        });
+      });
+    });
+    return;
+  }
+
+  // Leaderboard hot scope settings. We merge into the existing blob so
+  // the global switch and threshold values stay untouched.
+  if (type === 'XVM_RATE_FILTER_SET_SCOPE'
+      && typeof event.data.enabled === 'boolean'
+      && typeof event.data.scope === 'string') {
+    const SCOPE_KEY_FOR = { home: 'scopeHome', list: 'scopeList', profile: 'scopeProfile', status: 'scopeStatus' };
+    const key = SCOPE_KEY_FOR[event.data.scope];
+    if (!key) return;
+    safeChromeCall(() => {
+      const RF_KEY = 'xvm_rate_filter_v1';
+      chrome.storage.local.get({ [RF_KEY]: null }, (items) => {
+        const cur = items[RF_KEY] && typeof items[RF_KEY] === 'object' ? items[RF_KEY] : {};
+        const next = { ...cur, [key]: event.data.enabled, __scopeMigratedV2: true };
+        chrome.storage.local.set({ [RF_KEY]: next }, () => {
+          window.postMessage({ type: 'XVM_RATE_SETTINGS_UPDATE', settings: next }, '*');
+        });
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_RATE_FILTER_REQUEST') {
+    safeChromeCall(() => {
+      const RF_KEY = 'xvm_rate_filter_v1';
+      chrome.storage.local.get({ [RF_KEY]: null }, (items) => {
+        const settings = items[RF_KEY] && typeof items[RF_KEY] === 'object'
+          ? items[RF_KEY]
+          : { enabled: false, scopeHome: false, scopeList: false, scopeProfile: false, scopeStatus: false };
+        window.postMessage({ type: 'XVM_RATE_SETTINGS_UPDATE', settings }, '*');
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_LB_POS_REQUEST') {
+    safeChromeCall(() => {
+      chrome.storage.local.get({ xvmLeaderboardPos: null }, (items) => {
+        if (items.xvmLeaderboardPos) {
+          window.postMessage({ type: 'XVM_LB_POS_LOAD', pos: items.xvmLeaderboardPos }, '*');
+        }
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_LB_SIZE_REQUEST') {
+    safeChromeCall(() => {
+      chrome.storage.local.get({ xvmLeaderboardWidth: null }, (items) => {
+        if (Number.isFinite(items.xvmLeaderboardWidth)) {
+          window.postMessage({ type: 'XVM_LB_SIZE_LOAD', width: items.xvmLeaderboardWidth }, '*');
+        }
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_LB_POS_SAVE' && event.data.pos) {
+    safeChromeCall(() => {
+      chrome.storage.local.set({ xvmLeaderboardPos: event.data.pos });
+    });
+    return;
+  }
+
+  if (type === 'XVM_LB_SIZE_SAVE' && Number.isFinite(event.data.width)) {
+    safeChromeCall(() => {
+      chrome.storage.local.set({ xvmLeaderboardWidth: event.data.width });
+    });
+    return;
+  }
+
+  if (type === 'XVM_LB_HEIGHT_REQUEST') {
+    safeChromeCall(() => {
+      chrome.storage.local.get({ xvmLeaderboardHeight: null }, (items) => {
+        if (Number.isFinite(items.xvmLeaderboardHeight)) {
+          window.postMessage({ type: 'XVM_LB_HEIGHT_LOAD', height: items.xvmLeaderboardHeight }, '*');
+        }
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_LB_HEIGHT_SAVE' && Number.isFinite(event.data.height)) {
+    safeChromeCall(() => {
+      chrome.storage.local.set({ xvmLeaderboardHeight: event.data.height });
+    });
+    return;
+  }
+
+  if (type === 'XVM_LEADERBOARD_DISABLE') {
+    safeChromeCall(() => {
+      chrome.storage.sync.set({ featureVelocityLeaderboard: false }, () => {
+        chrome.storage.sync.get(STORAGE_DEFAULTS, (items) => {
+          pushSettings(items);
+        });
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_LEADERBOARD_SETTINGS_SAVE' && event.data.patch && typeof event.data.patch === 'object') {
+    const rawPatch = event.data.patch;
+    const patch = {};
+    if (Object.prototype.hasOwnProperty.call(rawPatch, 'leaderboardCount')) {
+      patch.leaderboardCount = normalizeLeaderboardCount(rawPatch.leaderboardCount);
+    }
+    if (Object.prototype.hasOwnProperty.call(rawPatch, 'leaderboardEdgeHideEnabled')) {
+      patch.leaderboardEdgeHideEnabled = rawPatch.leaderboardEdgeHideEnabled !== false;
+    }
+    if (Array.isArray(rawPatch.leaderboardColumns)) {
+      patch.leaderboardColumns = normalizeLeaderboardColumns(rawPatch.leaderboardColumns);
+    }
+    if (Object.keys(patch).length) {
+      safeChromeCall(() => {
+        chrome.storage.sync.set(patch, () => {
+          chrome.storage.sync.get(STORAGE_DEFAULTS, (items) => {
+            pushSettings(items);
+          });
+        });
+      });
+    }
+    return;
+  }
+
+  if (type === 'XVM_SC_TEMPLATES_REQUEST') {
+    const ops = ['Retweeters', 'SearchTimeline', '_global'];
+    const defaults = {};
+    for (const op of ops) defaults[`xvmStarChartTemplate_${op}`] = null;
+    safeChromeCall(() => {
+      chrome.storage.local.get(defaults, (items) => {
+        const templates = {};
+        for (const op of ops) {
+          const v = items[`xvmStarChartTemplate_${op}`];
+          if (v) templates[op] = v;
+        }
+        window.postMessage({
+          type: 'XVM_SC_TEMPLATES_LOAD',
+          templates,
+        }, '*');
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_SC_TEMPLATE_CAPTURE' && event.data.op && event.data.template) {
+    const storageKey = `xvmStarChartTemplate_${event.data.op}`;
+    safeChromeCall(() => {
+      chrome.storage.local.get({ [storageKey]: {} }, (items) => {
+        const cur = items[storageKey] || {};
+        const next = { ...cur, ...event.data.template, capturedAt: Date.now() };
+        chrome.storage.local.set({ [storageKey]: next });
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_GROK_SETTINGS_REQUEST') {
+    safeChromeCall(() => {
+      chrome.storage.sync.get({
+        grokCommentPrompt: DEFAULT_FEATURES.grokCommentPrompt,
+        grokPromptTemplates: DEFAULT_FEATURES.grokPromptTemplates,
+        grokSelectedPromptId: DEFAULT_FEATURES.grokSelectedPromptId,
+        grokTemporaryChat: DEFAULT_FEATURES.grokTemporaryChat,
+        grokEnterToReply: DEFAULT_FEATURES.grokEnterToReply,
+        aiProvider: DEFAULT_FEATURES.aiProvider,
+        aiOpenAIPlatform: DEFAULT_FEATURES.aiOpenAIPlatform,
+        aiBaseUrl: DEFAULT_FEATURES.aiBaseUrl,
+        aiModel: DEFAULT_FEATURES.aiModel,
+        aiReplyCount: DEFAULT_FEATURES.aiReplyCount,
+        aiLanguage: DEFAULT_FEATURES.aiLanguage,
+      }, (syncItems) => {
+        chrome.storage.local.get({ xvmGrokCapturedTxId: null }, (localItems) => {
+          const promptTemplates = normalizeGrokPromptTemplates(syncItems.grokPromptTemplates, syncItems.grokCommentPrompt);
+          window.postMessage({
+            type: 'XVM_GROK_SETTINGS_LOAD',
+            promptTemplate: promptTemplates[0]?.prompt || DEFAULT_FEATURES.grokCommentPrompt,
+            promptTemplates,
+            selectedPromptId: syncItems.grokSelectedPromptId || promptTemplates[0]?.id || 'default',
+            temporaryChat: syncItems.grokTemporaryChat !== false,
+            enterToReply: syncItems.grokEnterToReply === true,
+            aiProvider: syncItems.aiProvider || DEFAULT_FEATURES.aiProvider,
+            aiOpenAIPlatform: syncItems.aiOpenAIPlatform || DEFAULT_FEATURES.aiOpenAIPlatform,
+            aiBaseUrl: syncItems.aiBaseUrl || DEFAULT_FEATURES.aiBaseUrl,
+            aiModel: syncItems.aiModel || DEFAULT_FEATURES.aiModel,
+            aiReplyCount: syncItems.aiReplyCount || DEFAULT_FEATURES.aiReplyCount,
+            aiLanguage: syncItems.aiLanguage || DEFAULT_FEATURES.aiLanguage,
+            capturedTxId: localItems.xvmGrokCapturedTxId,
+          }, '*');
+        });
+      });
+    });
+    return;
+  }
+
+  // Persist a tx-id observed on a real X-UI add_response.json POST.
+  // Stored as { txId, capturedAt } in chrome.storage.local. Used as fallback
+  // when self-generated tx-ids fail signature validation (e.g. after X
+  // redeploys their bundle and our algorithm port is briefly out of date).
+  if (type === 'XVM_GROK_CAPTURE_SET' && typeof event.data.txId === 'string' && event.data.txId.length > 16) {
+    safeChromeCall(() => {
+      chrome.storage.local.set({
+        xvmGrokCapturedTxId: { txId: event.data.txId, capturedAt: Date.now() },
+      });
+    });
+    return;
+  }
+
+  if (type === 'XVM_GROK_CAPTURE_CLEAR') {
+    safeChromeCall(() => chrome.storage.local.remove('xvmGrokCapturedTxId'));
+    return;
+  }
+
+  if (type === 'XVM_AI_GENERATE' && typeof event.data.requestId === 'string') {
+    const requestId = event.data.requestId;
+    safeChromeCall(() => {
+      chrome.runtime.sendMessage({
+        type: 'XVM_AI_GENERATE',
+        requestId,
+        payload: event.data.payload || {},
+      }, (res) => {
+        const lastError = chrome.runtime.lastError;
+        window.postMessage({
+          type: 'XVM_AI_GENERATE_RESULT',
+          requestId,
+          ok: !lastError && !!res?.ok,
+          comments: Array.isArray(res?.comments) ? res.comments : [],
+          error: lastError?.message || res?.error || '',
+        }, '*');
+      });
+    });
+    return;
+  }
+});
+
+// One-time cleanup of legacy captured template (no longer used after self-gen
+// rollout). Idempotent flag avoids the IPC on every page load.
+safeChromeCall(() => {
+  chrome.storage.local.get({ xvmLegacyGrokTemplateCleared: false }, (items) => {
+    if (items.xvmLegacyGrokTemplateCleared) return;
+    chrome.storage.local.remove('xvmGrokEndpointTemplate', () => {
+      chrome.storage.local.set({ xvmLegacyGrokTemplateCleared: true });
+    });
+  });
+});
+
+safeChromeCall(() => {
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName === 'local') {
+      if (changes.bookmarkRefreshAt) {
+        refreshFolders();
+      }
+      if (changes.bookmarkFoldersCache) {
+        const cache = changes.bookmarkFoldersCache.newValue;
+        if (cache?.folders) pushFolders(cache.folders, cache.cachedAt || 0);
+      }
+      if (changes.bookmarkFolderMutation?.newValue) {
+        window.postMessage({
+          type: 'XVM_BOOKMARK_FOLDER_DIRTY',
+          ...changes.bookmarkFolderMutation.newValue,
+        }, '*');
+      }
+      if (changes[BOOKMARK_TIMELINE_SETTINGS_KEY]) {
+        chrome.storage.sync.get(STORAGE_DEFAULTS, (items) => pushSettings(items));
+        autoRefreshBookmarkTimeline(false);
+      }
+      return;
+    }
+
+    if (areaName !== 'sync') return;
+    // Theme changes: broadcast to MAIN-world content.js so leaderboard
+    // recolors live. (Popup already self-syncs via its own listener.)
+    if (changes.theme) {
+      const pref = changes.theme.newValue || 'system';
+      window.postMessage({ type: 'XVM_THEME_UPDATE', pref }, '*');
+    }
+    const aiTouched = changes.aiProvider || changes.aiOpenAIPlatform || changes.aiBaseUrl || changes.aiModel || changes.aiReplyCount || changes.aiLanguage;
+    const grokTouched = changes.grokCommentPrompt || changes.grokPromptTemplates || changes.grokSelectedPromptId || changes.grokTemporaryChat || changes.grokEnterToReply || changes.language || aiTouched;
+    const bookmarkTimelineInjectTouched = changes.featureBookmarkTimelineInject || changes.bookmarkTimelineInjectFolderIds || changes.bookmarkTimelineInjectEvery;
+    if (!changes.trending && !changes.viral && !changes.featureVelocityLeaderboard && !changes.featureCopyAsMarkdown && !changes.featureStarChart && !changes.featureBookmarkFolders && !bookmarkTimelineInjectTouched && !changes.showBookmarkCount && !changes.leaderboardEdgeHideEnabled && !changes.badgeStyle && !changes.leaderboardCount && !changes.leaderboardColumns && !changes.language && !grokTouched) return;
+
+    safeChromeCall(() => {
+      chrome.storage.sync.get(STORAGE_DEFAULTS, (items) => {
+        pushSettings(items);
+      });
+      if (changes.featureBookmarkFolders?.newValue === true) {
+        refreshFolders();
+      }
+      if (bookmarkTimelineInjectTouched) {
+        // Selection or the master toggle changed: prime any newly-selected
+        // folder in the background (stale/missing folders fetch, fresh ones skip).
+        autoRefreshBookmarkTimeline(false);
+      }
+      if (grokTouched) {
+        chrome.storage.sync.get({
+          grokCommentPrompt: DEFAULT_FEATURES.grokCommentPrompt,
+          grokPromptTemplates: DEFAULT_FEATURES.grokPromptTemplates,
+          grokSelectedPromptId: DEFAULT_FEATURES.grokSelectedPromptId,
+          grokTemporaryChat: DEFAULT_FEATURES.grokTemporaryChat,
+          grokEnterToReply: DEFAULT_FEATURES.grokEnterToReply,
+          aiProvider: DEFAULT_FEATURES.aiProvider,
+          aiOpenAIPlatform: DEFAULT_FEATURES.aiOpenAIPlatform,
+          aiBaseUrl: DEFAULT_FEATURES.aiBaseUrl,
+          aiModel: DEFAULT_FEATURES.aiModel,
+        aiReplyCount: DEFAULT_FEATURES.aiReplyCount,
+        aiLanguage: DEFAULT_FEATURES.aiLanguage,
+      }, (items) => {
+          const promptTemplates = normalizeGrokPromptTemplates(items.grokPromptTemplates, items.grokCommentPrompt);
+          window.postMessage({
+            type: 'XVM_GROK_SETTINGS_LOAD',
+            promptTemplate: promptTemplates[0]?.prompt || DEFAULT_FEATURES.grokCommentPrompt,
+            promptTemplates,
+            selectedPromptId: items.grokSelectedPromptId || promptTemplates[0]?.id || 'default',
+            temporaryChat: items.grokTemporaryChat !== false,
+            enterToReply: items.grokEnterToReply === true,
+            aiProvider: items.aiProvider || DEFAULT_FEATURES.aiProvider,
+            aiOpenAIPlatform: items.aiOpenAIPlatform || DEFAULT_FEATURES.aiOpenAIPlatform,
+            aiBaseUrl: items.aiBaseUrl || DEFAULT_FEATURES.aiBaseUrl,
+            aiModel: items.aiModel || DEFAULT_FEATURES.aiModel,
+            aiReplyCount: items.aiReplyCount || DEFAULT_FEATURES.aiReplyCount,
+            aiLanguage: items.aiLanguage || DEFAULT_FEATURES.aiLanguage,
+          }, '*');
+        });
+      }
+    });
+  });
+});
+
+let bookmarkRefreshInFlight = null;
+let bookmarkLastFetchAt = 0;
+
+async function refreshFolders() {
+  if (bookmarkRefreshInFlight) return bookmarkRefreshInFlight;
+  if (Date.now() - bookmarkLastFetchAt < 3000) return null;
+
+  bookmarkRefreshInFlight = (async () => {
+    bookmarkLastFetchAt = Date.now();
+    try {
+      const ct0 = document.cookie.match(/ct0=([^;]+)/)?.[1];
+      if (!ct0) return;
+
+      const url = `/i/api/graphql/${OP_LIST.qid}/${OP_LIST.name}?variables=${encodeURIComponent('{}')}`;
+      const res = await fetch(url, {
+        credentials: 'include',
+        headers: {
+          authorization: X_BEARER,
+          'x-csrf-token': ct0,
+          'x-twitter-auth-type': 'OAuth2Session',
+          'content-type': 'application/json',
+        },
+      });
+      if (!res.ok) {
+        console.warn('[XVM] refreshFolders HTTP', res.status);
+        return;
+      }
+
+      const data = await res.json();
+      const slice = data?.data?.viewer?.user_results?.result?.bookmark_collections_slice;
+      const errors = Array.isArray(data?.errors) ? data.errors : [];
+      const errorText = errors.map((err) => err?.message || '').join(' ').toLowerCase();
+      const unsupported = errors.length > 0 && /premium|blue|subscription|permission|not allowed|unauthorized/.test(errorText);
+
+      if (unsupported) {
+        const cachedAt = Date.now();
+        safeChromeCall(() => {
+          chrome.storage.local.set({
+            bookmarkFoldersCache: { folders: [], cachedAt },
+            bookmarkNotSupported: true,
+          });
+          chrome.storage.sync.set({ featureBookmarkFolders: false });
+        });
+        pushFolders([], cachedAt);
+        return;
+      }
+
+      if (slice === null || slice === undefined) {
+        console.warn('[XVM] refreshFolders: bookmark_collections_slice missing, treating as transient');
+        return;
+      }
+
+      const folders = (slice.items || [])
+        .map((item) => ({ id: item?.id, name: item?.name }))
+        .filter((folder) => folder.id && folder.name);
+      const cachedAt = Date.now();
+      bookmarkLastFetchAt = cachedAt;
+      safeChromeCall(() => {
+        chrome.storage.local.set({
+          bookmarkFoldersCache: { folders, cachedAt },
+          bookmarkNotSupported: false,
+        });
+      });
+      pushFolders(folders, cachedAt);
+    } catch (err) {
+      console.warn('[XVM] refreshFolders failed', err);
+    } finally {
+      bookmarkRefreshInFlight = null;
+    }
+  })();
+  return bookmarkRefreshInFlight;
+}
+
+safeChromeCall(() => {
+  chrome.storage.local.get({ bookmarkFoldersCache: null }, (items) => {
+    const cache = items.bookmarkFoldersCache;
+    const stale = !cache || !cache.cachedAt || Date.now() - cache.cachedAt > 6 * 3600 * 1000;
+    if (stale) setTimeout(refreshFolders, 500);
+  });
+});
+
+// Hydrate the persisted bookmark-timeline cache into the page, then kick off the
+// background auto-refresh loop so selected folders stay primed while any x.com
+// tab is open — the user no longer has to open each folder to cache it.
+safeChromeCall(() => {
+  hydrateConfiguredBookmarkTimelineCache();
+  setTimeout(() => autoRefreshBookmarkTimeline(false), 1500);
+  ensureBookmarkTimelineAutoTimer();
+});
+
+let bookmarkTimelineObservedAccountId = currentBookmarkTimelineAccountId();
+setInterval(() => {
+  const accountId = currentBookmarkTimelineAccountId();
+  if (!accountId) return;
+  if (bookmarkTimelineObservedAccountId && bookmarkTimelineObservedAccountId !== accountId) {
+    safeChromeCall(() => clearBookmarkTimelineStorage());
+  }
+  bookmarkTimelineObservedAccountId = accountId;
+}, 5000);

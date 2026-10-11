@@ -1,0 +1,626 @@
+{
+  "extName": {
+    "message": "X 爆款雷达 - AI 创作与流速监测助手"
+  },
+  "extDescription": {
+    "message": "X 实时推文流速徽章、爆款深度拆解、AI 仿写二创、榜单导出与长图增强 — 专为海外增长打造，零数据收集。"
+  },
+  "popupSubtitle": {
+    "message": "X 推文的实时曝光流速"
+  },
+  "tierNormal": {
+    "message": "正常"
+  },
+  "tierTrending": {
+    "message": "蹿升"
+  },
+  "tierViral": {
+    "message": "爆款"
+  },
+  "hoverHint": {
+    "message": "悬停徽章查看浏览量、点赞、转发、回复、收藏与爆帖指数。"
+  },
+  "thresholdTrending": {
+    "message": "🚀 蹿升阈值"
+  },
+  "thresholdViral": {
+    "message": "🔥 爆款阈值"
+  },
+  "btnSave": {
+    "message": "保存"
+  },
+  "btnSaved": {
+    "message": "保存成功"
+  },
+  "btnReset": {
+    "message": "重置"
+  },
+  "btnAdd": {
+    "message": "新增"
+  },
+  "btnDelete": {
+    "message": "删除"
+  },
+  "btnResetTemplates": { "message": "恢复默认模板" },
+  "grokTplSaved": { "message": "已保存" },
+  "grokTplNamePlaceholder": { "message": "模板名称" },
+  "flashSaved": {
+    "message": "已保存 ✓"
+  },
+  "flashReset": {
+    "message": "已重置 ✓"
+  },
+  "featureCopyMdTitle": {
+    "message": "📋 复制推文为 Markdown"
+  },
+  "featureCopyMdDesc": {
+    "message": "在 X 原生分享菜单底部添加“复制为 Markdown”入口，并将推文正文、作者、链接和时间复制为 Markdown 格式。"
+  },
+  "featureLeaderboardTitle": {
+    "message": "📊 流速榜"
+  },
+  "featureLeaderboardDesc": {
+    "message": "可拖拽的浮动面板，显示当前页面里增长最快的推文。点击某一行可滚动到对应推文。"
+  },
+  "featureLeaderboardEdgeHideTitle": {
+    "message": "贴边隐藏"
+  },
+  "featureLeaderboardEdgeHideDesc": {
+    "message": "开启后，将流速榜拖到屏幕边缘并松开即可收起。"
+  },
+  "featureLeaderboardShowTop": {
+    "message": "显示前"
+  },
+  "featureLeaderboardTweets": {
+    "message": "条推文"
+  },
+  "featureLeaderboardColsHint": {
+    "message": "拖动调整顺序 · 勾选控制显示"
+  },
+  "popupColRank": {
+    "message": "排名"
+  },
+  "popupColIcon": {
+    "message": "等级图标"
+  },
+  "popupColHandle": {
+    "message": "用户名"
+  },
+  "popupColPreview": {
+    "message": "推文预览"
+  },
+  "popupColViews": {
+    "message": "浏览量"
+  },
+  "popupColVelocity": {
+    "message": "流速"
+  },
+  "contentViews": {
+    "message": "浏览量"
+  },
+  "contentLikes": {
+    "message": "点赞"
+  },
+  "contentRetweets": {
+    "message": "转发"
+  },
+  "contentReplies": {
+    "message": "回复"
+  },
+  "contentBookmarks": {
+    "message": "收藏"
+  },
+  "contentVelocity": {
+    "message": "流速"
+  },
+  "contentViralScore": {
+    "message": "爆帖指数"
+  },
+  "contentPosted": {
+    "message": "发布时间"
+  },
+  "contentLeaderboardTitle": {
+    "message": "本页热点"
+  },
+  "contentLeaderboardDragToMove": {
+    "message": "拖动以移动"
+  },
+  "contentLeaderboardBackToPrevious": {
+    "message": "返回之前的滚动位置"
+  },
+  "contentLeaderboardEdgeHide": {
+    "message": "贴边隐藏"
+  },
+  "contentLeaderboardEdgeShow": {
+    "message": "展开"
+  },
+  "contentLeaderboardSettings": {
+    "message": "打开热度榜设置"
+  },
+  "contentLeaderboardClose": {
+    "message": "关闭热度榜"
+  },
+  "contentLeaderboardCloseSettings": {
+    "message": "关闭设置"
+  },
+  "contentLeaderboardSettingsPanelTitle": {
+    "message": "热度榜设置"
+  },
+  "contentLeaderboardColumns": {
+    "message": "显示列"
+  },
+  "contentLeaderboardSettingsAutoSave": {
+    "message": "设置会自动保存，并立即应用到当前页面。"
+  },
+  "contentLeaderboardTotalViews": {
+    "message": "总浏览量"
+  },
+  "contentLeaderboardAiReply": {
+    "message": "一键打开 AI 回复"
+  },
+  "contentCopyMdLabel": {
+    "message": "复制为 Markdown"
+  },
+  "contentCopyMdDone": {
+    "message": "已复制！"
+  },
+  "contentCopyMdAttribution": {
+    "message": "由 X Viral Monitor 提供"
+  },
+  "contentCopyMdNoTweetFound": {
+    "message": "未找到推文"
+  },
+  "contentCopyMdCopyFailed": {
+    "message": "复制失败"
+  },
+  "contentCopyTweetCommentsLabel": {
+    "message": "复制推文与评论"
+  },
+  "contentCopyTweetCommentsDone": {
+    "message": "已复制推文与评论！"
+  },
+  "contentCopyTweetCommentsHeading": {
+    "message": "评论"
+  },
+  "contentFallbackTweetLabel": {
+    "message": "推文"
+  },
+  "flashColumnsSaved": {
+    "message": "列设置已保存 ✓"
+  },
+  "flashLeaderboardOn": {
+    "message": "流速榜已开启 ✓"
+  },
+  "flashLeaderboardOff": {
+    "message": "流速榜已关闭"
+  },
+  "flashLeaderboardEdgeHideOn": {
+    "message": "贴边隐藏已开启 ✓"
+  },
+  "flashLeaderboardEdgeHideOff": {
+    "message": "贴边隐藏已关闭"
+  },
+  "flashCopyMdOn": {
+    "message": "Markdown 复制已开启 ✓"
+  },
+  "flashCopyMdOff": {
+    "message": "Markdown 复制已关闭"
+  },
+  "flashShowingTop": {
+    "message": "当前显示前 $COUNT$ 条 ✓",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "contentStarChartMenuLabel": {
+    "message": "感谢星图"
+  },
+  "contentStarChartAttribution": {
+    "message": "由 X Viral Monitor 提供"
+  },
+  "contentStarChartTitle": {
+    "message": "感谢星图"
+  },
+  "contentStarChartLoading": {
+    "message": "正在加载支持者..."
+  },
+  "contentStarChartProgress": {
+    "message": "已加载 {{COUNT}} 位支持者"
+  },
+  "contentStarChartRateLimited": {
+    "message": "触发限频，等待 {{SECONDS}} 秒..."
+  },
+  "contentStarChartDone": {
+    "message": "完成 — 共 {{COUNT}} 位支持者"
+  },
+  "contentStarChartDoneTruncated": {
+    "message": "已达上限 — 已加载 {{COUNT}} 位（仍有更多未加载）"
+  },
+  "contentStarChartError": {
+    "message": "加载失败：{{REASON}}"
+  },
+  "contentStarChartNoTweetFound": {
+    "message": "无法识别这条推文"
+  },
+  "contentStarChartModuleNotLoaded": {
+    "message": "星图组件未加载 — 请刷新页面后重试"
+  },
+  "contentStarChartLegendRT": {
+    "message": "转推"
+  },
+  "contentStarChartLegendQuote": {
+    "message": "引用"
+  },
+  "contentStarChartLegendBoth": {
+    "message": "两者皆有"
+  },
+  "contentStarChartClose": {
+    "message": "关闭"
+  },
+  "contentStarChartStatRetweets": {
+    "message": "转推"
+  },
+  "contentStarChartStatQuotes": {
+    "message": "引用"
+  },
+  "contentStarChartStatSupporters": {
+    "message": "支持者"
+  },
+  "contentStarChartStatSpan": {
+    "message": "引用时间跨度"
+  },
+  "contentStarChartSearchPlaceholder": {
+    "message": "搜索昵称或用户名..."
+  },
+  "contentStarChartRiverTitle": {
+    "message": "引用之河"
+  },
+  "contentStarChartRiverEmpty": {
+    "message": "暂无引用推文"
+  },
+  "contentStarChartEmpty": {
+    "message": "这条推文暂时没有转推或引用"
+  },
+  "contentStarChartReset": {
+    "message": "重置视角"
+  },
+  "popupStarChartLabel": {
+    "message": "感谢星图"
+  },
+  "popupStarChartHint": {
+    "message": "在每条推文的分享菜单中添加生成星图的入口。"
+  },
+  "flashStarChartOn": {
+    "message": "已开启星图功能"
+  },
+  "flashStarChartOff": {
+    "message": "已关闭星图功能"
+  },
+  "featureBookmarkFoldersTitle": {
+    "message": "🔖 书签文件夹菜单"
+  },
+  "featureBookmarkFoldersDesc": {
+    "message": "悬停推文书签按钮即可选择文件夹、查看已保存位置或新建文件夹。需要 X Premium。"
+  },
+  "flashBookmarkFoldersOn": {
+    "message": "已开启书签文件夹菜单"
+  },
+  "flashBookmarkFoldersOff": {
+    "message": "已关闭书签文件夹菜单"
+  },
+  "contentBookmarkMenuInFolder": {
+    "message": "已保存到："
+  },
+  "contentBookmarkMenuNotInAny": {
+    "message": "尚未保存到任何文件夹"
+  },
+  "contentBookmarkMenuCheckFailed": {
+    "message": "无法确认当前文件夹，点击文件夹可重试。"
+  },
+  "contentBookmarkMenuChecking": {
+    "message": "正在检查当前文件夹…"
+  },
+  "contentBookmarkMenuLoadingFolders": {
+    "message": "正在加载书签文件夹…"
+  },
+  "contentBookmarkMenuLoadFailed": {
+    "message": "加载文件夹失败，可能需要 X Premium。"
+  },
+  "contentBookmarkMenuNoFolders": {
+    "message": "还没有文件夹"
+  },
+  "contentBookmarkMenuNewFolderPlaceholder": {
+    "message": "+ 新建文件夹（回车）"
+  },
+  "featureBookmarkCountTitle": {
+    "message": "🔖 显示书签收藏数"
+  },
+  "featureBookmarkCountDesc": {
+    "message": "在时间线推文的书签按钮旁显示被收藏的数量。"
+  },
+  "flashBookmarkCountOn": {
+    "message": "已开启书签数显示"
+  },
+  "flashBookmarkCountOff": {
+    "message": "已关闭书签数显示"
+  },
+  "contentStarChartTitleLabel": {
+    "message": "速度监测"
+  },
+  "contentStarChartHeroEyebrow": {
+    "message": "谢谢每一个让这条推文继续走下去的人"
+  },
+  "contentStarChartHeroTitle": {
+    "message": "每一束光，都是一只把它传出去的手。"
+  },
+  "contentStarChartStatsSectionTitle": {
+    "message": "概览"
+  },
+  "contentStarChartPeopleSectionTitle": {
+    "message": "支持者"
+  },
+  "contentStarChartFilterAll": {
+    "message": "全部"
+  },
+  "contentStarChartFilterRetweet": {
+    "message": "转推"
+  },
+  "contentStarChartFilterQuote": {
+    "message": "引用"
+  },
+  "contentStarChartFilterBoth": {
+    "message": "两者"
+  },
+  "contentStarChartRiverPrev": {
+    "message": "上一条引用"
+  },
+  "contentStarChartRiverNext": {
+    "message": "下一条引用"
+  },
+  "popupGrokPromptTitle": {
+    "message": "Grok 评论提示词"
+  },
+  "popupGrokPromptHint": {
+    "message": "只写要求就行 —— 缺少 [推文内容] 和「每条评论用代码块包裹」时会自动补上。想指定原推文插入位置就自己写 [推文内容]。点击回复框里的 AI 生成后选择模板，生成完成后再从 Options 中选择一条填入。"
+  },
+  "popupGrokTempChatLabel": {
+    "message": "使用临时对话（不污染 Grok 历史记录）"
+  },
+  "flashGrokTempChatOn": {
+    "message": "已开启临时对话 ✓"
+  },
+  "flashGrokTempChatOff": {
+    "message": "已关闭临时对话"
+  },
+  "flashGrokPromptSaved": {
+    "message": "Grok 提示词已保存 ✓"
+  },
+  "flashGrokPromptReset": {
+    "message": "Grok 提示词已重置 ✓"
+  },
+  "badgeStyleLabel": {
+    "message": "🏷️ 徽章样式"
+  },
+  "badgeStylePillSolid": {
+    "message": "胶囊实底"
+  },
+  "badgeStyleInlineClassic": {
+    "message": "经典行内"
+  },
+  "flashBadgeStyleSaved": {
+    "message": "徽章样式已保存 ✓"
+  },
+  "proBannerFree":       { "message": "免费版" },
+  "proBannerPro":        { "message": "Pro 已激活" },
+  "proBannerTrial":      { "message": "试用中 — 还剩 $DAYS$ 天", "placeholders": { "DAYS": { "content": "$1" } } },
+  "proBannerTrialOne":   { "message": "试用中 — 还剩 1 天" },
+  "proNudgeTrialEnd":    { "message": "试用还剩 $DAYS$ 天，开通 Pro 后可继续使用流速过滤。", "placeholders": { "DAYS": { "content": "$1" } } },
+  "proNudgeTrialEndOne": { "message": "试用还剩 1 天，开通 Pro 后可继续使用流速过滤。" },
+  "proActivateLabel":    { "message": "已购买？在这里激活" },
+  "proActivatePlaceholder": { "message": "creem-XXXXX..." },
+  "proActivateBtn":      { "message": "激活" },
+  "proActivating":       { "message": "正在激活…" },
+  "proActivatedOk":      { "message": "激活成功,刷新 x.com 后生效。" },
+  "proActErrFormat":     { "message": "License Key 格式不正确。" },
+  "proActErrWorkerUnset":{ "message": "License 服务暂不可用，请稍后再试或联系支持。" },
+  "proActErrGeneric":    { "message": "激活失败: $ERROR$", "placeholders": { "ERROR": { "content": "$1" } } },
+  "proLicenseField":     { "message": "License" },
+  "proActivatedField":   { "message": "激活时间" },
+  "proExpiresField":     { "message": "续费时间" },
+  "proManageBtn":        { "message": "管理订阅" },
+  "proDeactivateBtn":    { "message": "取消激活" },
+  "proDeactivating":     { "message": "正在取消…" },
+  "proDeactivatedOk":    { "message": "已取消激活。" },
+  "proDeactivateErr":    { "message": "取消激活失败。" },
+  "rfTitle":         { "message": "推文流速过滤" },
+  "rfLockedHint":    { "message": "智能过滤低流速内容，聚焦爆款内容。" },
+  "rfEnabled":       { "message": "隐藏低流速推文" },
+  "rfScopeLegend":   { "message": "作用域" },
+  "rfScopeHome":     { "message": "首页" },
+  "rfScopeList":     { "message": "列表" },
+  "rfScopeProfile":  { "message": "博主主页" },
+  "rfScopeStatus":   { "message": "帖子详情" },
+  "rfShortLegend":   { "message": "短推 — 任一过线即显示" },
+  "rfLongLegend":    { "message": "X Articles 长文 — 任一过线即显示" },
+  "rfRatePerMin":    { "message": "views / 分钟 ≥" },
+  "rfAbsoluteViews": { "message": "总浏览量 ≥" },
+  "rfRuleHint":      { "message": "规则: 若 (views/min > 速率阈值) 或 (总浏览量 > 绝对阈值) 任一成立即显示, 否则隐藏。" },
+  "rfReset":         { "message": "恢复默认" },
+  "rfSave":          { "message": "保存" },
+  "rfSavedOk":       { "message": "已保存 ✓" },
+  "rfResetOk":       { "message": "已重置 ✓" },
+  "featureLeaderboardResetPos":  { "message": "重置流速榜位置" },
+  "featureLeaderboardResetDone": { "message": "已重置,请刷新页面。" },
+  "accRateFilter":    { "message": "流速过滤" },
+  "accRateFilterSub": { "message": "高级" },
+  "accLeaderboard":   { "message": "流速榜与徽章" },
+  "accPro":           { "message": "License / Pro" },
+  "accOther":         { "message": "其它功能与设置" },
+  "heroTrialDaysLeft": { "message": "试用还剩 $DAYS$ 天", "placeholders": { "DAYS": { "content": "$1" } } },
+  "heroTrialDayOne":   { "message": "试用还剩 1 天" },
+  "heroProActive":     { "message": "已永久激活 · 全部专业特权已解锁" },
+  "communityDevBadge": { "message": "Community DEV Build" },
+  "communityDevSub":   { "message": "本地 Pro 功能已全部启用。官方 License 服务和自动更新属于 Chrome Web Store 版本。" },
+  "heroFreeTagline":   { "message": "基础功能免费开放，Pro 提供少量进阶能力" },
+  "heroActivateExistingLink": { "message": "已购买？去激活" },
+  "proScopeTitle":     { "message": "🌟 已解锁全部专业特权" },
+  "proScopeBody":      { "message": "推文实时流速过滤、高级阈值规则拦截、创作者 8 大高纯度中文 AI 创作与仿写模板、流速榜无限制实时查看与数据导出等全部专业功能均已永久解锁。" },
+  "proFreeTitle":      { "message": "⚡️ 本地纯净运行与隐私保障" },
+  "proFreeBody":       { "message": "全部流速算法与提示词均在本地运行，零网络鉴权依赖，零外部数据收集，永久离线可用。" },
+  "proWebsiteLink":    { "message": "查看官网说明" },
+  "proExpiresFieldPermanent": { "message": "永久有效 (Lifetime VIP)" },
+  "cardFreeFeaturesTitle":  { "message": "免费功能" },
+  "cardProFeaturesTitle":   { "message": "Pro 功能" },
+  "cardProFeaturesSub":     { "message": "进阶能力" },
+  "featureBadgeLabel":       { "message": "流速徽章" },
+  "featureLeaderboardLabel": { "message": "流速榜面板" },
+  "featureCopyMdLabel":      { "message": "Markdown 复制" },
+  "featureRateFilterLabel":  { "message": "流速过滤" },
+  "featureColorCardLabel":   { "message": "自定义色卡" },
+  "featureWebhookLabel":     { "message": "私有热帖监控" },
+  "featureBarkLabel":        { "message": "Bark 推送" },
+  "chipEnabled":     { "message": "已启用" },
+  "chipComingSoon":  { "message": "敬请期待" },
+  "btnConfigure":    { "message": "配置 →" },
+  "btnBack":         { "message": "返回" },
+  "btnCancel":       { "message": "取消" },
+  "footerPoweredBy": { "message": "Powered by" },
+  "toastM2Hint":     { "message": "v1.8.0 即将推出" },
+  "activateTitle":   { "message": "激活已有 License" },
+  "advBadgeThresholdsTitle": { "message": "徽章阈值与样式" },
+  "advLeaderboardTitle":     { "message": "流速榜详情" },
+  "advOtherFeaturesTitle":   { "message": "其它功能" },
+  "advGrokShortTitle":       { "message": "AI 回复 — 提示词模板" },
+  "aiProviderTitle": { "message": "AI 评论服务" },
+  "aiProviderLabel": { "message": "服务来源" },
+  "aiPlatformLabel": { "message": "平台" },
+  "aiBaseUrlLabel": { "message": "Base URL" },
+  "aiModelLabel": { "message": "模型" },
+  "aiReplyCountLabel": { "message": "评论数量" },
+  "aiApiKeyLabel": { "message": "API Key" },
+  "aiProviderHint": { "message": "云端服务会把推文上下文发送到所选 AI 服务；Ollama 在本机运行。" },
+  "aiProviderHintGrok": { "message": "X Grok 使用当前 X 登录态，不需要 API Key。" },
+  "aiProviderHintOllama": { "message": "Ollama 在本机运行，请确认 Ollama 已启动且模型已下载。" },
+  "aiProviderHintCloud": { "message": "云端服务会把推文文本和回复上下文发送到所选 AI 服务。" },
+  "aiProviderXGrok": { "message": "X Grok" },
+  "aiProviderXGrokDesc": { "message": "使用当前 X 登录态" },
+  "aiProviderOllama": { "message": "Ollama" },
+  "aiProviderOllamaDesc": { "message": "本机模型服务" },
+  "aiProviderOpenAICompatible": { "message": "OpenAI 兼容接口" },
+  "aiProviderOpenAICompatibleDesc": { "message": "OpenAI、DeepSeek、OpenRouter 等" },
+  "aiServiceConfigTitle": { "message": "服务配置" },
+  "aiGenerationSettingsTitle": { "message": "生成设置" },
+  "aiCheckLoginStatus": { "message": "检查 Grok 就绪状态" },
+  "aiTestConnection": { "message": "测试连接" },
+  "aiTestRunning": { "message": "正在测试连接..." },
+  "aiTestOk": { "message": "连接测试通过" },
+  "aiTestFailed": { "message": "连接测试失败" },
+  "tabPro":         { "message": "Pro" },
+  "tabFilter":      { "message": "过滤" },
+  "tabLeaderboard": { "message": "流速榜" },
+  "tabAi":          { "message": "AI 评论" },
+  "tabAbout":       { "message": "关于" },
+  "rfSubShort":     { "message": "短推" },
+  "rfSubLong":      { "message": "长文 (X Article)" },
+  "comingListTitle":{ "message": "v1.8.0 即将推出" },
+  "chipTierFree":   { "message": "免费" },
+  "chipTierTrial":  { "message": "试用" },
+  "chipTierPro":    { "message": "Pro" },
+  "chipTrialDays":  { "message": "还剩 $DAYS$ 天", "placeholders": { "DAYS": { "content": "$1" } } },
+  "chipTrialOne":   { "message": "还剩 1 天" },
+  "themeLabel":     { "message": "主题" },
+  "themeSwitchToDark":  { "message": "切换到深色" },
+  "themeSwitchToLight": { "message": "切换到明亮" },
+  "themeFollowSystem":  { "message": "跟随系统" },
+  "languageLabel":      { "message": "语言" },
+  "languageHint":       { "message": "控制弹窗、页面浮层和默认 Grok 提示词语言。" },
+  "languageAuto":       { "message": "自动 / 跟随浏览器" },
+  "languageZh":         { "message": "中文" },
+  "languageEn":         { "message": "English" },
+  "languageJa":         { "message": "日本語" },
+  "aboutUpdatesTitle": { "message": "版本功能与更新说明" },
+  "aboutUpdatesDesc": { "message": "查看 21Zhao 爆款雷达最新旗舰特性与版本更新日志。" },
+  "aboutShowUpdateNotes": { "message": "查看功能更新说明" },
+  "aboutShowUpdateNotesSent": { "message": "已打开最新功能更新说明" },
+  "aboutShowUpdateNotesNoTab": { "message": "已打开最新功能更新说明" },
+  "grokShortTemplateLabel": { "message": "提示词模板" },
+  "popupGrokEnterReplyLabel": { "message": "按 Enter 直接回复" },
+  "popupGrokEnterReplyHint": { "message": "开启后，单独按 Enter 会发送回复；Shift/Command/Ctrl/Alt+Enter 保持原有行为。" },
+  "flashGrokEnterReplyOn": { "message": "已开启 Enter 直接回复" },
+  "flashGrokEnterReplyOff": { "message": "已关闭 Enter 直接回复" },
+  "flashAiProviderSaved": { "message": "AI 评论服务设置已保存" },
+  "grokDefaultTemplateName": { "message": "自然中文评论" },
+  "grokCustomTemplateName": { "message": "模板 $N$", "placeholders": { "N": { "content": "$1" } } },
+  "contentLbHotOnly":      { "message": "仅看热帖" },
+  "contentLbHotProTitle":  { "message": "仅看热帖" },
+  "contentLbHotProSub":    { "message": "智能过滤低浏览量推文，聚焦高潜爆款内容" },
+  "contentLbHotEnabledToast": { "message": "仅看热帖已开启：未达到热帖标准的帖子会从页面移除并不显示。" },
+  "contentLbHotActiveNotice": { "message": "仅看热帖已开启，低于标准的帖子已隐藏" },
+  "contentLbHotScopeTitle": { "message": "生效范围" },
+  "contentLbHotScopeHome": { "message": "首页 / 推荐流" },
+  "contentLbHotScopeList": { "message": "列表" },
+  "contentLbHotScopeProfile": { "message": "个人主页" },
+  "contentLbHotScopeStatus": { "message": "推文详情页" },
+  "contentLbHotScopeCurrent": { "message": "当前" },
+  "contentLbHotDetails":   { "message": "全功能已开放" },
+  "contentLbHotOpenSite":  { "message": "全功能已开启" },
+  "contentUpdateTitle": { "message": "21Zhao 爆款雷达 · 最新功能更新" },
+  "contentUpdateSubtitle": { "message": "21Zhao Studio 专属定制版 · 释放全套专业创作与监测能力：" },
+  "contentUpdateItemProTitle": { "message": "⚡ 全功能完全开放" },
+  "contentUpdateItemProBody": { "message": "全功能原生内置与完全开放：流速过滤、高级规则与仅看热帖无条件放开，纯净轻量，无任何商业门槛。" },
+  "contentUpdateItemGeminiTitle": { "message": "🤖 Gemini 直连与全模型生态" },
+  "contentUpdateItemGeminiBody": { "message": "在设置 → AI 生成评论里选择服务来源：支持 Google Gemini 2.0 Flash 官方直连，并可接入 OpenAI 兼容接口、DeepSeek、OpenRouter 或本机 Ollama。" },
+  "contentUpdateItemViralAiTitle": { "message": "🔥 爆款深度拆解 & 结构二创" },
+  "contentUpdateItemViralAiBody": { "message": "新增 8 套专业级创作者 Prompt 模板：一键深度拆解爆款推文底层逻辑与 Hook 钩子，秒级生成 5 条高赞原创仿写草稿。" },
+  "contentUpdateItemLbQuickAiTitle": { "message": "⚡️ 排行榜一键直达 AI 回复" },
+  "contentUpdateItemLbQuickAiBody": { "message": "右上角热帖榜单每行增加闪烁快捷键，一键平滑跳转推文并自动唤起回复框与 AI 模板菜单；推文卡片顶部与操作栏双通道展现。" },
+  "contentUpdateItemAiProviderTitle": { "message": "AI 评论服务" },
+  "contentUpdateItemAiProviderBody": { "message": "在设置 → AI 生成评论里选择服务来源：可以继续使用 X Grok，也可以接入 OpenAI 兼容接口、DeepSeek、OpenRouter 或本机 Ollama。" },
+  "contentUpdateItemReplyToolsTitle": { "message": "Enter 直接回复" },
+  "contentUpdateItemReplyToolsBody": { "message": "新增评论时按 Enter 直接发送评论的功能。在设置 → 其他功能 → 按 Enter 直接回复开启后，回复框里不用再按 Command + Enter。" },
+  "contentUpdateItemHotOnlyTitle": { "message": "仅看热帖状态更清楚" },
+  "contentUpdateItemHotOnlyBody": { "message": "开启仅看热帖后，低于热帖标准的帖子会直接从页面移除；生效范围可以在 Popup 或悬浮面板设置里勾选。" },
+  "contentUpdateItemBookmarkToolsTitle": { "message": "书签功能别错过" },
+  "contentUpdateItemBookmarkToolsBody": { "message": "在设置 → 其他功能里可以开启书签文件夹菜单和显示书签数。开启后可选择保存文件夹、查看保存位置，并在时间线直接看到书签数量。" },
+  "contentUpdateItemFilterRulesTitle": { "message": "内容屏蔽更稳" },
+  "contentUpdateItemFilterRulesBody": { "message": "内容屏蔽减少了普通 Telegram 讨论的误判，同时补充更多微信 / Telegram 引流广告特征，减少漏掉的广告回复和个人简介引流。" },
+  "contentUpdateDismiss": { "message": "开始使用" },
+  "cfTitle":        { "message": "内容屏蔽" },
+  "cfLockedHint":   { "message": "内容屏蔽是免费功能，可直接开启。" },
+  "cfEnabled":      { "message": "隐藏黄推 / 广告 / 引流回复" },
+  "cfLevel":        { "message": "屏蔽强度" },
+  "cfLevelLight":   { "message": "宽松" },
+  "cfLevelStandard":{ "message": "标准" },
+  "cfLevelStrict":  { "message": "严格" },
+  "cfRuleCounts":   { "message": "当前强度启用 $COUNT$ 条内置规则，自定义 $CUSTOM$ 条。", "placeholders": { "COUNT": { "content": "$1" }, "CUSTOM": { "content": "$2" } } },
+  "cfScopeHint":    { "message": "仅作用于推文详情页评论区，不影响主页/搜索/用户主页/主推文本身。" },
+  "cfCustomTitle":  { "message": "自定义规则" },
+  "cfWhitelistTitle": { "message": "白名单 / 黑名单设置" },
+  "cfValue":        { "message": "关键词 / 正则 / 域名" },
+  "cfAddRule":      { "message": "添加规则" },
+  "cfDeleteRule":   { "message": "删除规则" },
+  "cfCustomEmpty":  { "message": "暂无自定义规则。" },
+  "cfWhitelistFollowing": { "message": "始终放行已关注账号" },
+  "cfWhitelistHandles": { "message": "白名单账号" },
+  "cfBlacklistHandles": { "message": "黑名单账号" },
+  "cfWhitelistDomains": { "message": "白名单域名" },
+  "cfAllRulesTitle": { "message": "全部规则" },
+  "cfBuiltinRule":  { "message": "内置" },
+  "cfCustomRule":   { "message": "自定义" },
+  "cfNoRules":      { "message": "暂无规则。" },
+  "cfRuleHint":     { "message": "本地规则只在浏览器内运行，不上传内容；先应用白名单，再应用硬规则和强度阈值。" },
+  "cfRulesSourceBundled": { "message": "规则来源:内置" },
+  "cfRulesSourceRemote":  { "message": "规则来源:远程 · 更新于 $AGO$", "placeholders": { "AGO": { "content": "$1" } } },
+  "cfRulesJustNow":       { "message": "刚刚" },
+  "cfRulesMinutesAgo":    { "message": "$N$ 分钟前", "placeholders": { "N": { "content": "$1" } } },
+  "cfRulesHoursAgo":      { "message": "$N$ 小时前", "placeholders": { "N": { "content": "$1" } } },
+  "cfRulesDaysAgo":       { "message": "$N$ 天前", "placeholders": { "N": { "content": "$1" } } },
+  "cfRulesRefresh":       { "message": "立即检查更新" },
+  "cfRulesRefreshing":    { "message": "拉取中…" },
+  "cfRulesRefreshOk":     { "message": "规则已更新。" },
+  "cfRulesRefreshErr":    { "message": "拉取失败,请稍后重试。" },
+  "cfAutoSaved":          { "message": "已自动保存" },
+  "advAppearanceTitle": { "message": "外观" }
+}

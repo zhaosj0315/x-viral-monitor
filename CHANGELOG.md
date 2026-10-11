@@ -1,0 +1,253 @@
+# Changelog
+
+This project follows Keep a Changelog and Semantic Versioning.
+本项目遵循 Keep a Changelog 与 Semantic Versioning。
+
+---
+
+## [1.0.0] - 2026-10-10
+
+### Added
+- **21Zhao 爆款雷达 · 白纸黑字极简重构**：全面引入高对比度黑白极简主义设计，消除视觉杂音，大幅提升夜间与专业环境下的信息易读性。
+- **多模态推文深度解析**：支持图文混排推文的多模态视觉内容提取（Alt 描述、图片说明、长图元数据），深度还原推文信息。
+- **循环对话与引用推文脉络解析**：完整提取多轮对话线程（Thread Ancestors）与引用推文（Quoted Tweets），为 AI 提示词提供上下文全景。
+- **全面剥离 Pro 门槛**：所有高级功能（流速过滤、榜单一键导出、多模态拆解、长图超清阅读）100% 永久免费开放，彻底移除商业授权壁垒与订阅弹窗。
+- **多模型生态互通**：支持直连 Google Gemini 2.0 Flash、X 原生 Grok 以及任意自定义 OpenAI 兼容协议大模型 API。
+- **独立发布里程碑**：锁定全新 v1.0.0 版本号，全量 394 项自动化单元与集成测试绿灯通过。
+
+---
+
+## [1.7.15] - 2026-06-03
+
+### Fixed
+
+- Removed the remaining hardcoded Telegram URL block path that surfaced as `url:block` / "URL blocked".
+- Telegram mirrors or discussion links now stay visible unless paired with explicit spam, adult, or funnel wording.
+
+---
+
+## [1.7.14] - 2026-06-03
+
+### Fixed
+
+- Reduced content-filter false positives by no longer hiding replies solely because they contain a `tg` / `t.me` URL.
+- Kept Telegram filtering for high-confidence funnel cases where Telegram links appear together with explicit ad, adult, group, or resource-promotion signals.
+
+---
+
+## [1.7.13] - 2026-06-01
+
+### Added
+
+- Added a Premium bookmark-folder hover menu on X bookmark buttons, with localized copy, native-style folder rows, and dark-mode styling.
+- Added cross-tab bookmark-folder invalidation so X bookmark folder pages refresh after folder membership changes instead of showing stale cached timelines.
+
+### Fixed
+
+- Fixed removing a tweet from a bookmark folder by using X's current `RemoveTweetFromBookmarkFolder` GraphQL operation name.
+- Fixed already-bookmarked tweets not reliably appearing in a target bookmark folder until manual refresh.
+- Improved X dark-mode leaderboard contrast for readable titles, metadata, hover, and active states.
+
+### Internal
+
+- Added regression coverage for bookmark-folder i18n, dark styling, operation mapping, and folder-page cache invalidation.
+
+---
+
+## [1.7.10] - 2026-05-28
+
+### Fixed
+
+- Hardened the desktop Tampermonkey userscript GraphQL hook for Firefox/X CSP isolation by avoiding inline page injection assumptions, exporting page-context hook functions, and parsing GraphQL response text on the userscript side.
+- Fixed the velocity badge hover tooltip so it dismisses on focus loss, scroll, outside click, Escape, or leaving the tooltip.
+- Fixed Grok article reply generation so long-form X Articles use article-aware prompt selection and directly publishable reply text.
+
+### Documentation
+
+- Documented the open-source repository vs official Chrome Web Store build model, including the Free / Pro feature boundary.
+
+### Internal
+
+- Ignored local content-filter sample reports generated during debugging.
+
+## [1.7.9] - 2026-05-27
+
+### Fixed
+
+- Moved the content-filter summary banner to sit immediately after the main tweet cell, before any X separator cells.
+
+---
+
+## [1.7.8] - 2026-05-26
+
+### Fixed
+
+- Fixed empty XVM velocity badges appearing in tweet author headers when badge data was incomplete.
+- Improved content-filter DOM fallback extraction by preserving emoji image alt text from X replies.
+- Tightened short spam reply detection for letter/number/emoji patterns while preserving normal short Chinese replies.
+
+---
+
+## [1.7.7] - 2026-05-26
+
+### Changed
+
+- Expanded Standard content-filter rules for reply-name funnel patterns such as "返佣", "互联网赚", and "点头像".
+- Added a high-severity short-symbol reply rule for emoji/symbol-only spam while preserving normal short Chinese replies.
+
+### Added
+
+- Added a reply-only DOM fallback classifier for tweet detail pages so visible reply name/content/url can still be filtered when GraphQL author fields are incomplete.
+
+---
+
+## [1.7.6] - 2026-05-26
+
+### Changed
+
+- Limited content filtering to reply cells on tweet detail pages only; home, profile, search, lists, and the main tweet are left untouched.
+- Moved the filtered-replies summary into the reply timeline instead of the page-level top area.
+
+### Added
+
+- Added a popup "All rules" view showing built-in and custom content-filter rules grouped by field, with custom-rule deletion from the same list.
+
+---
+
+## [1.7.5] - 2026-05-26
+
+### Fixed
+
+- Fixed a content-filter summary observer loop that could make X detail pages unresponsive after filtered replies were rendered.
+- Debounced content-filter DOM rescans and ignored XVM's own summary/style mutations so the filter no longer reacts to its own UI updates.
+
+### Internal
+
+- Added regression coverage for summary self-mutations and unchanged summary rendering.
+
+---
+
+## [1.7.4] - 2026-05-26
+
+### Fixed
+
+- Fixed content filtering so it remains fully opt-in: disabled settings now reliably restore reply cells hidden earlier in the same page session.
+- Hardened cross-filter restore handling by marking and clearing the actual X timeline cell that was hidden, not only the nested tweet article.
+
+### Internal
+
+- Added a DOM-level regression test covering disabled-by-default behavior and OFF-state restore for the content filter.
+
+---
+
+## [1.7.3] - 2026-05-26
+
+### Changed
+
+- Made content filtering completely free, including all built-in strengths and unlimited custom keyword / regex / domain rules.
+- Tuned the default content-filter rules with the latest sample files: tighter resource matching to avoid false positives, stronger name/location offline-service detection, and broader Telegram funnel detection.
+
+### Internal
+
+- Added regression coverage for the new sample-driven rules and Free-tier content-filter access.
+
+---
+
+## [1.7.2] - 2026-05-26
+
+### Added
+
+- Added Pro content filtering for adult, ad, phishing, and funnel replies with Light / Standard / Strict severity levels.
+- Added local built-in rules plus user custom keyword / regex / domain rules, handle/domain whitelist support, and a filtered-replies summary strip on X pages.
+- Added popup controls for content filter enablement, strength, rule counts, and custom rules.
+
+### Internal
+
+- Integrated the content filter into the existing premium gate, GraphQL response pipeline, and cross-filter hide-marker restore logic.
+
+---
+
+## [1.7.1] - 2026-05-24
+
+### Fixed
+
+- Switched XVM Pro license activation from the shared XMP Worker to an independent `xvm-license` Worker, fixing Chrome extension CORS failures during activation.
+- Added Worker-signed ECDSA entitlement envelopes and client-side verification before storing or refreshing Pro license state.
+- Made XVM product scoping fail closed: missing or non-XVM `product_id` now rejects the license and downgrades to Free.
+- Pinned the license proxy URL to `https://xvm-license.lengkuxiaomao.workers.dev`.
+
+### Internal
+
+- Added independent Worker deployment config, XVM-only product whitelist, and local ignored secret helper files.
+- Kept the existing $2.9/month and $29/year Creem checkout product IDs while the new pricing products are pending.
+
+---
+
+## [1.7.0] - 2026-05-20
+
+### Added
+
+- XVM Pro tier: Free / Trial / Pro states, a 14-day local trial, Creem-backed Pro license checks through a Cloudflare Worker proxy, and Trial/Pro-only feature gating.
+- Hot-only filtering: hide low-velocity tweets using views-per-minute and absolute view thresholds, with separate short-post and long-article settings.
+- Hot-only scope controls: Home, Lists, Profiles, and Tweet detail pages can be enabled independently from the popup.
+- Floating leaderboard controls: compact Hot-only switch synced with the popup. Free or expired users see a disabled switch with a Pro badge; Trial/Pro users can toggle directly from X.
+
+### Changed
+
+- Popup filter controls now use consistent switch styling for binary feature toggles while preserving checkboxes for multi-select settings.
+- The floating leaderboard's Hot-only switch was resized to match the header text scale.
+- Short/Long rate-filter tabs now have a reliable selected state and keyboard focus styling.
+
+### Security
+
+- Pro license checks keep the Creem API key out of the extension package.
+
+### Internal
+
+- Added contract tests for Hot-only filtering, switch rendering, i18n lock-step, and dist sync.
+- Synced source and `dist/` for the v1.7.0 extension package.
+
+---
+
+## [1.7.0] - 2026-05-20 (中文)
+
+### 新增
+
+- XVM Pro 套装: Free / Trial / Pro 三态、14 天本地试用、通过 Cloudflare Worker 代理 Creem license 校验, 并对 Trial/Pro 功能做统一 gating。
+- 仅看热帖: 按 views/min + 总浏览量双阈值隐藏低流速推文, 短推和 X Article 长文可分开设置。
+- 仅看热帖作用域: 首页、List、博主主页、推文详情页可在 popup 中独立开关。
+- 悬浮流速榜控制: 在 X 页面悬浮面板中显示“仅看热帖”开关, 与 popup 双向同步。Free/过期用户显示灰色禁用 + Pro 角标, Trial/Pro 可直接切换。
+
+### 变更
+
+- popup 中二元功能控件统一为 switch, 多选设置继续保留 checkbox。
+- 悬浮榜“仅看热帖”开关缩小到与标题文字更匹配。
+- 流速过滤短推/长文 tab 补齐可靠选中态和键盘焦点样式。
+
+### 安全
+
+- Pro license 校验继续通过 Worker 代理, Creem API key 不进入扩展包。
+
+### 内部
+
+- 新增流速过滤、switch 渲染、i18n 与 dist sync 合同测试。
+- 已同步 source 与 `dist/` 作为 v1.7.0 打包基础。
+
+---
+
+## [1.6.13] - 2026-05-19
+
+### Fixed
+
+- Fixed normal image zoom loss on multi-image tweets by making the image viewer active-swipe aware.
+- Fixed the medium-tall image ratio gap after the long-image viewer threshold moved from 2.0 to 3.0.
+
+### Internal
+
+- Added active-swipe and threshold-sync contract tests.
+
+---
+
+## Earlier versions
+
+See git tags for v1.6.x and v1.5.x releases.
